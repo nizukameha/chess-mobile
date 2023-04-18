@@ -2,24 +2,32 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Pieces } from '../entities';
 
-const moves = {
-  'TourNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
-  'CavalierNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
-  'FouNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
-  'ReineNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
-  'RoiNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
-  'PionNoir': (row: number, col: number) => [{ row: row + 1, col: col }],
-
-  'TourBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
-  'CavalierBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
-  'FouBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
-  'ReineBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
-  'RoiBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
-  'PionBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
-}
 
 
 export default function Chessboard() {
+
+  const moves = {
+    'TourNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'CavalierNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'FouNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'ReineNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'RoiNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'PionNoir': (row: number, col: number) => {
+      const possibleMoves = [{ row: row + 1, col: col }];
+      if (row === 1) {
+        possibleMoves.push({ row: row + 2, col: col });
+      }
+      return possibleMoves;
+    },
+
+    'TourBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'CavalierBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'FouBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'ReineBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'RoiBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'PionBlanc': (row: number, col: number) => [{ row: row - 1, col: col }],
+  }
+
   // Définir la taille de chaque case de l'échiquier
   const squareSize = 40;
 
@@ -111,7 +119,7 @@ export default function Chessboard() {
   const darkSquareColor = '#B58863';
   const [isTouched, setIsTouched] = useState<Pieces>();
 
-  const [possibleMove, setPossibleMove] = useState<{row:number; col:number}[]>();
+  const [possibleMove, setPossibleMove] = useState<{ row: number; col: number }[]>();
 
   function selectPiece(row: number, col: number) {
     let piece = positions[row][col];
@@ -120,10 +128,8 @@ export default function Chessboard() {
       setIsTouched(piece)
       setPossibleMove(moves[piece.name](row, col));
       console.log(possibleMove);
-      
 
     }
-
   }
 
   // Générer les cases de l'échiquier en utilisant deux boucles for
@@ -140,10 +146,10 @@ export default function Chessboard() {
             {positions && isTouched && positions[row][col] == isTouched
               ? <Image source={positions[row][col]?.src} style={{ width: 40, height: 40, backgroundColor: 'red' }} />
               : <Image source={positions[row][col]?.src} style={{ width: 40, height: 40 }} />}
-            {possibleMove.find(item => item.row == row)) && 
-            {/* Verifier que les positions possibles (row, col) sont les memes que la case */}
-              <Image source={positions[possibleMove.row][possibleMove.col]?.src} style={{ width: 40, height: 40, backgroundColor: 'red' }} />
+            {possibleMove && possibleMove.find(item => item.row && item.row === row && item.col === col) &&
+              <Image source={positions[row][col]?.src} style={{ width: 40, height: 80, backgroundColor: 'red', opacity: 0.3  }} />
             }
+
           </TouchableOpacity>
         </View>
       );
