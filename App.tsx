@@ -1,6 +1,6 @@
 import * as React from 'react';
 import HomeScreen from './screens/HomeScreen';
-import Chess from './screens/Chess';
+import Chess from './screens/Chessboard';
 import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
