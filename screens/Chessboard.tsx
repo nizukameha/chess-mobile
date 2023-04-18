@@ -127,15 +127,28 @@ export default function Chessboard() {
 
   const [possibleMove, setPossibleMove] = useState<{ row: number; col: number }[]>();
 
+  /*
+  ** Cette fonction prend en parametre la position de la piece sélectionnée
+  */
   function selectPiece(row: number, col: number) {
     let piece = positions[row][col];
     if (positions && piece) {
       // console.log(piece.name);
       setIsTouched(piece)
       setPossibleMove(moves[piece.name](row, col));
-      console.log(possibleMove);
-
     }
+  }
+
+  /*
+  ** Cette fonction prend en parametre la position du mouvement sélectionné
+  ** Il faut intervertir avec setPositions la piece dans le tableau
+  */
+  function movePiece(row:number, col:number) {
+    for (let key in possibleMove) {
+      console.log('row:' + row);
+      
+    }
+    
   }
 
   // Générer les cases de l'échiquier en utilisant deux boucles for
@@ -153,9 +166,10 @@ export default function Chessboard() {
               ? <Image source={positions[row][col]?.src} style={{ width: 40, height: 40, backgroundColor: 'red' }} />
               : <Image source={positions[row][col]?.src} style={{ width: 40, height: 40 }} />}
             {possibleMove && possibleMove.find(item => item.row && item.row === row && item.col === col) &&
-              <Image source={positions[row][col]?.src} style={{ width: 40, height: 80, backgroundColor: 'red', opacity: 0.3  }} />
+              <TouchableOpacity onPress={() => { movePiece(row, col) }}>
+                <Image source={positions[row][col]?.src} style={{ width: 40, height: 80, backgroundColor: 'red', opacity: 0.3 }} />
+              </TouchableOpacity>
             }
-
           </TouchableOpacity>
         </View>
       );
