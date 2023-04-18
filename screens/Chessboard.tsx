@@ -25,7 +25,13 @@ export default function Chessboard() {
     'FouBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
     'ReineBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
     'RoiBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
-    'PionBlanc': (row: number, col: number) => [{ row: row - 1, col: col }],
+    'PionBlanc': (row: number, col: number) => {
+      const possibleMoves = [{ row: row - 1, col: col }];
+      if (row === 6) {
+        possibleMoves.push({ row: row - 2, col: col });
+      }
+      return possibleMoves;
+    }
   }
 
   // Définir la taille de chaque case de l'échiquier
