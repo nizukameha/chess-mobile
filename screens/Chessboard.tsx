@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Pieces } from '../entities';
-import { movePionBlanc, movePionNoir, moveTourBlanc, moveTourNoir, moveCavalierNoir, moveCavalierblanc, moveRoiNoir, moveRoiBlanc } from '../PieceMoves';
+import { movePionBlanc, movePionNoir, moveTourBlanc, moveTourNoir, moveCavalierNoir, moveCavalierblanc, moveRoiNoir, moveRoiBlanc, moveFouBlanc, moveFouNoir } from '../PieceMoves';
 
 
 export default function Chessboard() {
@@ -9,14 +9,14 @@ export default function Chessboard() {
   const moves = {
     'TourNoir': moveTourNoir,
     'CavalierNoir': moveCavalierNoir,
-    'FouNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'FouNoir': moveFouNoir,
     'ReineNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
     'RoiNoir': moveRoiNoir,
     'PionNoir': movePionNoir,
 
     'TourBlanc': moveTourBlanc,
     'CavalierBlanc': moveCavalierblanc,
-    'FouBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'FouBlanc': moveFouBlanc,
     'ReineBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
     'RoiBlanc': moveRoiBlanc,
     'PionBlanc': movePionBlanc
@@ -160,14 +160,14 @@ export default function Chessboard() {
               ?
               <TouchableOpacity onPress={() => movePiece(row, col)}>
 
-                {/* <Image source={positions[row][col]?.src} style={{ width: 40, height: 40, borderWidth: 2, borderColor: 'red', borderRadius: 50 }} /> */}
+                <Image source={positions[row][col]?.src} style={{ width: 40, height: 40, borderWidth: 2, borderColor: 'red', borderRadius: 50 }} />
 
               </TouchableOpacity>
               :
               <TouchableOpacity onPress={() => { selectPiece(row, col) }}>
                 {/* Si une piece est sélectionnée la couleur de fond change (en rouge)  */}
                 {positions
-                  && <Image source={positions[row][col]?.src} style={{ width: 40, height: 40, backgroundColor: isTouched && positions[row][col] == isTouched ? 'red' : null }} />}
+                  && <Image source={positions[row][col]?.src} style={{ width: 40, height: 40, backgroundColor: isTouched && positions[row][col] == isTouched ? 'red' : 'none' }} />}
 
               </TouchableOpacity>
             }
