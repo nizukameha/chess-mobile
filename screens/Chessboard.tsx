@@ -113,9 +113,10 @@ export default function Chessboard() {
   const lightSquareColor = '#F0D9B5';
   const darkSquareColor = '#B58863';
   const [isTouched, setIsTouched] = useState<Pieces>();
-
   const [possibleMove, setPossibleMove] = useState<{ row: number; col: number }[]>();
   const [initialP, setInitialP] = useState({row: -1, col: -1});
+
+  
   /*
   ** Cette fonction prend en parametre la position de la piece sélectionnée
   */
@@ -134,7 +135,6 @@ export default function Chessboard() {
   */
   function movePiece(row:any, col:any) {
     const clone = JSON.parse(JSON.stringify(positions));
-    
     clone[initialP.row][initialP.col] = null;
     clone[row][col] = isTouched
     setPositions(clone);
