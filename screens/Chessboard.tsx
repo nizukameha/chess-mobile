@@ -156,7 +156,7 @@ export default function Chessboard() {
         squares.push(
           <View key={`${row}-${col}-${positions[row][col]?.name}`} style={[styles.square, { backgroundColor: backgroundColor, width: squareSize, height: squareSize }]}>
             {/* Une fois qu'une piece est sélectionnée on change la couleur de fond des cases qui sont des mouvements possibles */}
-            {possibleMove && possibleMove.find(item => item.row && item.row === row && item.col === col)
+            {possibleMove && possibleMove.find(item => item.row !== undefined && item.row === row && item.col === col)
               ?
               <TouchableOpacity onPress={() => movePiece(row, col)}>
 
