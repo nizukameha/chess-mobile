@@ -393,3 +393,209 @@ export const moveFouNoir = (row: number, col: number, positions: (Pieces | null)
 
   return possibleMoves
 }
+
+export const moveReineNoir = (row: number, col: number, positions: (Pieces | null)[][]) => {
+
+  const possibleMoves = [];
+
+   //Mouvement vers la Droite
+   for (let i = col + 1; i < 8; i++) {
+    const piece = positions[row][i];
+    if (piece) {
+      if (piece.name.indexOf('Blanc') !== -1) {
+        possibleMoves.push({ row: row, col: i }); // Si la pièce est ennemie, la tour peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, la tour ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: row, col: i });
+  }
+
+  //Mouvement vers la Gauche
+  for (let i = col - 1; i >= 0; i--) {
+    const piece = positions[row][i];
+    if (piece) {
+      if (piece.name.indexOf('Blanc') !== -1) {
+        possibleMoves.push({ row: row, col: i }); // Si la pièce est ennemie, la tour peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, la tour ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: row, col: i });
+  }
+
+  //Mouvement vers le haut
+  for (let i = row - 1; i >= 0; i--) {
+    const piece = positions[i][col];
+    if (piece) {
+      if (piece.name.indexOf('Blanc') !== -1) {
+        possibleMoves.push({ row: i, col: col }); // Si la pièce est ennemie, la tour peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, la tour ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: i, col: col });
+  }
+
+  //Mouvement vers le bas
+  for (let i = row + 1; i < 8; i++) {
+    const piece = positions[i][col];
+    if (piece) {
+      if (piece.name.indexOf('Blanc') !== -1) {
+        possibleMoves.push({ row: i, col: col }); // Si la pièce est ennemie, la tour peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, la tour ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: i, col: col });
+  }
+
+  // Mouvement en diagonale Haut-Gauche
+  for (let i = 1; row - i >= 0 && col - i >= 0; i++) {
+    const piece = positions[row - i][col - i];
+    if (piece) {
+      if (piece && piece.name.indexOf('Blanc') !== -1) {
+        possibleMoves.push({ row: row - i, col: col - i }); // Si la pièce est ennemie, le fou peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, le fou ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: row - i, col: col - i });
+  }
+
+  // Mouvement en diagonale Haut-Droite
+  for (let i = 1; row - i >= 0 && col + i < 8; i++) {
+    const piece = positions[row - i][col + i];
+    if (piece) {
+      if (piece && piece.name.indexOf('Blanc') !== -1) {
+        possibleMoves.push({ row: row - i, col: col + i }); // Si la pièce est ennemie, le fou peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, le fou ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: row - i, col: col + i });
+  }
+
+  // Mouvement en diagonale Bas-Gauche
+  for (let i = 1; row + i < 8 && col - i >= 0; i++) {
+    const piece = positions[row + i][col - i];
+    if (piece) {
+      if (piece && piece.name.indexOf('Blanc') !== -1) {
+        possibleMoves.push({ row: row + i, col: col - i }); // Si la pièce est ennemie, le fou peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, le fou ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: row + i, col: col - i });
+  }
+
+  // Mouvement en diagonale Bas-Droite
+  for (let i = 1; row + i < 8 && col + i < 8; i++) {
+    const piece = positions[row + i][col + i];
+    if (piece) {
+      if (piece && piece.name.indexOf('Blanc') !== -1) {
+        possibleMoves.push({ row: row + i, col: col + i }); // Si la pièce est ennemie, le fou peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, le fou ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: row + i, col: col + i });
+  }
+
+  return possibleMoves
+}
+
+export const moveReineBlanc = (row: number, col: number, positions: (Pieces | null)[][]) => {
+
+  const possibleMoves = [];
+
+   //Mouvement vers la Droite
+   for (let i = col + 1; i < 8; i++) {
+    const piece = positions[row][i];
+    if (piece) {
+      if (piece.name.indexOf('Noir') !== -1) {
+        possibleMoves.push({ row: row, col: i }); // Si la pièce est ennemie, la tour peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, la tour ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: row, col: i });
+  }
+
+  //Mouvement vers la Gauche
+  for (let i = col - 1; i >= 0; i--) {
+    const piece = positions[row][i];
+    if (piece) {
+      if (piece.name.indexOf('Noir') !== -1) {
+        possibleMoves.push({ row: row, col: i }); // Si la pièce est ennemie, la tour peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, la tour ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: row, col: i });
+  }
+
+  //Mouvement vers le haut
+  for (let i = row - 1; i >= 0; i--) {
+    const piece = positions[i][col];
+    if (piece) {
+      if (piece.name.indexOf('Noir') !== -1) {
+        possibleMoves.push({ row: i, col: col }); // Si la pièce est ennemie, la tour peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, la tour ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: i, col: col });
+  }
+
+  //Mouvement vers le bas
+  for (let i = row + 1; i < 8; i++) {
+    const piece = positions[i][col];
+    if (piece) {
+      if (piece.name.indexOf('Noir') !== -1) {
+        possibleMoves.push({ row: i, col: col }); // Si la pièce est ennemie, la tour peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, la tour ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: i, col: col });
+  }
+
+  // Mouvement en diagonale Haut-Gauche
+  for (let i = 1; row - i >= 0 && col - i >= 0; i++) {
+    const piece = positions[row - i][col - i];
+    if (piece) {
+      if (piece && piece.name.indexOf('Noir') !== -1) {
+        possibleMoves.push({ row: row - i, col: col - i }); // Si la pièce est ennemie, le fou peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, le fou ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: row - i, col: col - i });
+  }
+
+  // Mouvement en diagonale Haut-Droite
+  for (let i = 1; row - i >= 0 && col + i < 8; i++) {
+    const piece = positions[row - i][col + i];
+    if (piece) {
+      if (piece && piece.name.indexOf('Noir') !== -1) {
+        possibleMoves.push({ row: row - i, col: col + i }); // Si la pièce est ennemie, le fou peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, le fou ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: row - i, col: col + i });
+  }
+
+  // Mouvement en diagonale Bas-Gauche
+  for (let i = 1; row + i < 8 && col - i >= 0; i++) {
+    const piece = positions[row + i][col - i];
+    if (piece) {
+      if (piece && piece.name.indexOf('Noir') !== -1) {
+        possibleMoves.push({ row: row + i, col: col - i }); // Si la pièce est ennemie, le fou peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, le fou ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: row + i, col: col - i });
+  }
+
+  // Mouvement en diagonale Bas-Droite
+  for (let i = 1; row + i < 8 && col + i < 8; i++) {
+    const piece = positions[row + i][col + i];
+    if (piece) {
+      if (piece && piece.name.indexOf('Noir') !== -1) {
+        possibleMoves.push({ row: row + i, col: col + i }); // Si la pièce est ennemie, le fou peut la prendre en se déplaçant sur cette case
+      }
+      break; // Si la pièce est trouvée, le fou ne peut pas aller plus loin dans cette direction
+    }
+    possibleMoves.push({ row: row + i, col: col + i });
+  }
+
+  return possibleMoves
+}

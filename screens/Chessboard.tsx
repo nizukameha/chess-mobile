@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Pieces } from '../entities';
-import { movePionBlanc, movePionNoir, moveTourBlanc, moveTourNoir, moveCavalierNoir, moveCavalierblanc, moveRoiNoir, moveRoiBlanc, moveFouBlanc, moveFouNoir } from '../PieceMoves';
+import { movePionBlanc, movePionNoir, moveTourBlanc, moveTourNoir, moveCavalierNoir, moveCavalierblanc, moveRoiNoir, moveRoiBlanc, moveFouBlanc, moveFouNoir, moveReineNoir, moveReineBlanc } from '../PieceMoves';
 
 
 export default function Chessboard() {
@@ -10,14 +10,14 @@ export default function Chessboard() {
     'TourNoir': moveTourNoir,
     'CavalierNoir': moveCavalierNoir,
     'FouNoir': moveFouNoir,
-    'ReineNoir': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'ReineNoir': moveReineNoir,
     'RoiNoir': moveRoiNoir,
     'PionNoir': movePionNoir,
 
     'TourBlanc': moveTourBlanc,
     'CavalierBlanc': moveCavalierblanc,
     'FouBlanc': moveFouBlanc,
-    'ReineBlanc': (row: number, col: number) => [{ row: 0, col: 0 }],
+    'ReineBlanc': moveReineBlanc,
     'RoiBlanc': moveRoiBlanc,
     'PionBlanc': movePionBlanc
   }
@@ -28,7 +28,7 @@ export default function Chessboard() {
 
   const [positions, setPositions] = useState<(Pieces | null)[][]>([
     [
-      { name: 'TourBlanc', src: require('../assets/wr.png') },
+      { name: 'TourNoir', src: require('../assets/br.png') },
       { name: 'CavalierNoir', src: require('../assets/bn.png') },
       { name: 'FouNoir', src: require('../assets/bb.png') },
       { name: 'ReineNoir', src: require('../assets/bq.png') },
@@ -72,7 +72,7 @@ export default function Chessboard() {
       null,
       null,
       null,
-      { name: 'CavalierNoir', src: require('../assets/bn.png') },
+      null,
       null,
       null,
       null
