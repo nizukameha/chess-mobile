@@ -9,9 +9,14 @@ export default function Chessboard() {
   const [socket, setSocket] = useState(io);
 
   useEffect(() => {
-    setSocket(io("ws://192.168.1.10:8000"));
-    //positionsToFront
+    //obligé d'utiliser une var temporaire car les useState sont asynchrones
+    let temp = io("ws://192.168.1.10:8000");
+    setSocket(temp);
+    temp.on('positionsToFront', (data) => {
+      console.log(data);
+    })
   }, [])
+
   
   const moves = {
     'TourNoir': moveTourNoir,
@@ -28,7 +33,6 @@ export default function Chessboard() {
     'RoiBlanc': moveRoiBlanc,
     'PionBlanc': movePionBlanc
   }
-  
   
   // Définir la taille de chaque case de l'échiquier
   const squareSize = 40;
@@ -115,12 +119,6 @@ export default function Chessboard() {
       { name: 'TourBlanc', src: require('../assets/wr.png') }
     ],
   ])
-
-  useEffect(() => {
-  // Envoyer le tableau
-    socket.emit('positionsToBack', positions );
-    //setMyTurn(false)
-  }, [positions])
   
   // Définir les couleurs pour les cases claires et sombres
   const lightSquareColor = '#F0D9B5';
@@ -152,6 +150,7 @@ export default function Chessboard() {
     setPositions(clone);
     setIsTouched(undefined);
     setPossibleMove(undefined);
+    socket.emit('positionsToBack', clone );
   }
 
   // Générer les cases de l'échiquier en utilisant deux boucles for
