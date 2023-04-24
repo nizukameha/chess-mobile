@@ -10,6 +10,7 @@ export default function Chessboard() {
 
   useEffect(() => {
     setSocket(io("ws://192.168.1.10:8000"));
+    //positionsToFront
   }, [])
   
   const moves = {
@@ -118,6 +119,7 @@ export default function Chessboard() {
   useEffect(() => {
   // Envoyer le tableau
     socket.emit('positionsToBack', positions );
+    //setMyTurn(false)
   }, [positions])
   
   // Définir les couleurs pour les cases claires et sombres
