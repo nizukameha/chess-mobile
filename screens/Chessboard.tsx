@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import { io } from "socket.io-client";
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Pieces } from '../entities';
 import { movePionBlanc, movePionNoir, moveTourBlanc, moveTourNoir, moveCavalierNoir, moveCavalierblanc, moveRoiNoir, moveRoiBlanc, moveFouBlanc, moveFouNoir, moveReineNoir, moveReineBlanc } from '../PieceMoves';
 
-
 export default function Chessboard() {
 
+  const [socket, setSocket] = useState(io);
+
+  useEffect(() => {
+    setSocket(io("ws://192.168.1.10:8000"));
+  }, [])
+  
   const moves = {
     'TourNoir': moveTourNoir,
     'CavalierNoir': moveCavalierNoir,
@@ -13,7 +19,7 @@ export default function Chessboard() {
     'ReineNoir': moveReineNoir,
     'RoiNoir': moveRoiNoir,
     'PionNoir': movePionNoir,
-
+    
     'TourBlanc': moveTourBlanc,
     'CavalierBlanc': moveCavalierblanc,
     'FouBlanc': moveFouBlanc,
@@ -21,11 +27,11 @@ export default function Chessboard() {
     'RoiBlanc': moveRoiBlanc,
     'PionBlanc': movePionBlanc
   }
-
-
+  
+  
   // Définir la taille de chaque case de l'échiquier
   const squareSize = 40;
-
+  
   const [positions, setPositions] = useState<(Pieces | null)[][]>([
     [
       { name: 'TourNoir', src: require('../assets/br.png') },
@@ -109,14 +115,18 @@ export default function Chessboard() {
     ],
   ])
 
+  useEffect(() => {
+  // Envoyer le tableau
+    socket.emit('positionsToBack', positions );
+  }, [positions])
+  
   // Définir les couleurs pour les cases claires et sombres
   const lightSquareColor = '#F0D9B5';
   const darkSquareColor = '#B58863';
   const [isTouched, setIsTouched] = useState<Pieces>();
   const [possibleMove, setPossibleMove] = useState<{ row: number; col: number }[]>();
   const [initialP, setInitialP] = useState({ row: -1, col: -1 });
-
-
+  
   /*
   ** Cette fonction prend en parametre la position de la piece sélectionnée
   */
@@ -140,7 +150,6 @@ export default function Chessboard() {
     setPositions(clone);
     setIsTouched(undefined);
     setPossibleMove(undefined);
-
   }
 
   // Générer les cases de l'échiquier en utilisant deux boucles for
@@ -167,7 +176,7 @@ export default function Chessboard() {
               <TouchableOpacity onPress={() => { selectPiece(row, col) }}>
                 {/* Si une piece est sélectionnée la couleur de fond change (en rouge)  */}
                 {positions
-                  && <Image source={positions[row][col]?.src} style={{ width: 40, height: 40, backgroundColor: isTouched && positions[row][col] == isTouched ? 'red' : 'none' }} />}
+                  && <Image source={positions[row][col]?.src} style={{ width: 40, height: 40, backgroundColor: isTouched && positions[row][col] == isTouched ? 'red' : undefined }} />}
 
               </TouchableOpacity>
             }
@@ -175,7 +184,6 @@ export default function Chessboard() {
         );
       }
     }
-
     return squares;
   }
 
