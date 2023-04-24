@@ -29,7 +29,6 @@ export const movePionBlanc = (row: number, col: number, positions: (Pieces | nul
     }
 
   }
-  console.log(possibleMoves);
 
   return possibleMoves;
 }
