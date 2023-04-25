@@ -10,10 +10,11 @@ export default function Chessboard() {
 
   useEffect(() => {
     //obligé d'utiliser une var temporaire car les useState sont asynchrones
-    let temp = io("ws://192.168.1.10:8000");
+    let temp = io("ws://10.0.10.64:8000");
     setSocket(temp);
     temp.on('positionsToFront', (data) => {
       console.log(data);
+      setPositions(data);
     })
   }, [])
 
