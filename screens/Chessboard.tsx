@@ -7,14 +7,17 @@ import { movePionBlanc, movePionNoir, moveTourBlanc, moveTourNoir, moveCavalierN
 export default function Chessboard() {
 
   const [socket, setSocket] = useState(io);
+  const [myTurn, setMyTurn] = useState(false);
 
   useEffect(() => {
     //obligé d'utiliser une var temporaire car les useState sont asynchrones
-    let temp = io("ws://10.0.10.64:8000");
+    let temp = io("ws://172.20.10.2:8000");
     setSocket(temp);
     temp.on('positionsToFront', (data) => {
-      console.log(data);
       setPositions(data);
+    })
+    temp.on('myTurn', (data) => {
+      setMyTurn(data);
     })
   }, [])
 
@@ -132,11 +135,20 @@ export default function Chessboard() {
   ** Cette fonction prend en parametre la position de la piece sélectionnée
   */
   function selectPiece(row: number, col: number) {
-    let piece = positions[row][col];
-    if (positions && piece) {
-      setIsTouched(piece)
-      setPossibleMove(moves[piece.name](row, col, positions));
-      setInitialP({ row, col });
+    if (myTurn && positions[row][col]?.name.indexOf('Blanc') !== -1) {
+      let piece = positions[row][col];
+      if (positions && piece) {
+        setIsTouched(piece)
+        setPossibleMove(moves[piece.name](row, col, positions));
+        setInitialP({ row, col });
+      }
+    } else if (!myTurn && positions[row][col]?.name.indexOf('Noir') !== -1) {
+      let piece = positions[row][col];
+      if (positions && piece) {
+        setIsTouched(piece)
+        setPossibleMove(moves[piece.name](row, col, positions));
+        setInitialP({ row, col });
+      }
     }
   }
 
@@ -152,6 +164,7 @@ export default function Chessboard() {
     setIsTouched(undefined);
     setPossibleMove(undefined);
     socket.emit('positionsToBack', clone );
+    setMyTurn(!myTurn);
   }
 
   // Générer les cases de l'échiquier en utilisant deux boucles for
@@ -174,7 +187,7 @@ export default function Chessboard() {
                 <Image source={positions[row][col]?.src} style={{ width: 40, height: 40, borderWidth: 2, borderColor: 'red', borderRadius: 50 }} />
 
               </TouchableOpacity>
-              :
+              : 
               <TouchableOpacity onPress={() => { selectPiece(row, col) }}>
                 {/* Si une piece est sélectionnée la couleur de fond change (en rouge)  */}
                 {positions
