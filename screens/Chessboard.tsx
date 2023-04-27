@@ -1,11 +1,13 @@
 import { io } from "socket.io-client";
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Button } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, Button, Text } from 'react-native';
 import { Pieces } from '../entities';
 import { movePionBlanc, movePionNoir, moveTourBlanc, moveTourNoir, moveCavalierNoir, moveCavalierblanc, moveRoiNoir, moveRoiBlanc, moveFouBlanc, moveFouNoir, moveReineNoir, moveReineBlanc } from '../PieceMoves';
 
-export default function Chessboard() {
+export default function Chessboard({ route }: any) {
 
+  const { image } = route.params;
+  const { pseudo } = route.params;
   const [socket, setSocket] = useState(io);
   const [myTurn, setMyTurn] = useState(false);
   const [white, setWhite] = useState(false);
@@ -169,9 +171,29 @@ export default function Chessboard() {
     setMyTurn(!myTurn);
   }
 
-  function promotion(row: any, col: any) {
-    console.log('row: ' + row, 'col: ' + col);
+  const [row, setRow] = useState<any>()
+  const [col, setCol] = useState<any>()
 
+  function promotion(row: any, col: any) {
+    setShowModale(true)
+
+    setRow(row)
+    setCol(col)
+
+    console.log('position promotion', 'row ', row, 'col ', col);
+
+  }
+
+  function selectPromotion(piece: Pieces) {
+
+    console.log('Promotion Piece', piece);
+
+    const clone = JSON.parse(JSON.stringify(positions));
+    clone[row][col] = piece;
+
+    setPositions(clone);
+    socket.emit('positionsToBack', clone);
+    setShowModale(false)
   }
 
   // Générer les cases de l'échiquier en utilisant deux boucles for
@@ -209,28 +231,48 @@ export default function Chessboard() {
     return squares;
   }
 
-  const promoPiece: (Pieces | null)[] = [
+  const promoPieceNoire: (Pieces | null)[] = [
     { name: 'TourNoir', src: require('../assets/br.png') },
     { name: 'CavalierNoir', src: require('../assets/bn.png') },
     { name: 'FouNoir', src: require('../assets/bb.png') },
     { name: 'ReineNoir', src: require('../assets/bq.png') }
   ]
 
+  const promoPieceBlanche: (Pieces | null)[] = [
+    { name: 'TourBlanc', src: require('../assets/wr.png') },
+    { name: 'CavalierBlanc', src: require('../assets/wn.png') },
+    { name: 'FouBlanc', src: require('../assets/wb.png') },
+    { name: 'ReineBlanc', src: require('../assets/wq.png') }
+  ]
+
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button title="test" onPress={() => setShowModale(!showModale)} />
-      <View style={styles.container}>
-        {generateSquare()}
-      </View>
-      {showModale && (
-        <View style={{ flexDirection: 'row' }}>
-          {promoPiece.map((item) =>
+    <>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+          <Text style={{ fontSize: 25, color: myTurn ? 'red' : 'black' }}>{pseudo}</Text>
+          <Image source={{ uri: image.uri }} style={{ width: 80, height: 80, marginBottom: 15 }} />
+        </View>
+
+        <View style={styles.container}>
+          {generateSquare()}
+        </View>
+
+        {!white && showModale && promoPieceNoire.map((item) =>
+          <View key={`${item?.name}`} style={{ flexDirection: 'row' }}>
+            <TouchableOpacity onPress={() => selectPromotion(item)} >
+              <Image source={item?.src} style={{ width: 90, height: 90 }} />
+            </TouchableOpacity>
+          </View>
+        )}
+        {white && showModale && promoPieceBlanche.map((item) =>
+        <View key={`${item?.name}`} style={{ flexDirection: 'row' }}>
+          <TouchableOpacity onPress={() => selectPromotion(item)} >
             <Image source={item?.src} style={{ width: 90, height: 90 }} />
-          )}
+          </TouchableOpacity>
         </View>
       )}
-
-    </View>
+      </View>
+    </>
   );
 }
 
