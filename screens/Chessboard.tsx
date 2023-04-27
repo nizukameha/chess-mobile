@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Button } from 'react-native';
 import { Pieces } from '../entities';
 import { movePionBlanc, movePionNoir, moveTourBlanc, moveTourNoir, moveCavalierNoir, moveCavalierblanc, moveRoiNoir, moveRoiBlanc, moveFouBlanc, moveFouNoir, moveReineNoir, moveReineBlanc } from '../PieceMoves';
 
@@ -8,20 +8,24 @@ export default function Chessboard() {
 
   const [socket, setSocket] = useState(io);
   const [myTurn, setMyTurn] = useState(false);
+  const [white, setWhite] = useState(false);
+  const [showModale, setShowModale] = useState(false);
 
   useEffect(() => {
     //obligé d'utiliser une var temporaire car les useState sont asynchrones
-    let temp = io("ws://172.20.10.2:8000");
+    let temp = io("ws://10.0.10.64:8000");
     setSocket(temp);
     temp.on('positionsToFront', (data) => {
       setPositions(data);
+      setMyTurn(true);
     })
     temp.on('myTurn', (data) => {
-      setMyTurn(data);
+      setMyTurn(true);
+      setWhite(true);
     })
   }, [])
 
-  
+
   const moves = {
     'TourNoir': moveTourNoir,
     'CavalierNoir': moveCavalierNoir,
@@ -29,7 +33,7 @@ export default function Chessboard() {
     'ReineNoir': moveReineNoir,
     'RoiNoir': moveRoiNoir,
     'PionNoir': movePionNoir,
-    
+
     'TourBlanc': moveTourBlanc,
     'CavalierBlanc': moveCavalierblanc,
     'FouBlanc': moveFouBlanc,
@@ -37,10 +41,10 @@ export default function Chessboard() {
     'RoiBlanc': moveRoiBlanc,
     'PionBlanc': movePionBlanc
   }
-  
+
   // Définir la taille de chaque case de l'échiquier
   const squareSize = 40;
-  
+
   const [positions, setPositions] = useState<(Pieces | null)[][]>([
     [
       { name: 'TourNoir', src: require('../assets/br.png') },
@@ -123,33 +127,26 @@ export default function Chessboard() {
       { name: 'TourBlanc', src: require('../assets/wr.png') }
     ],
   ])
-  
+
   // Définir les couleurs pour les cases claires et sombres
   const lightSquareColor = '#F0D9B5';
   const darkSquareColor = '#B58863';
   const [isTouched, setIsTouched] = useState<Pieces>();
   const [possibleMove, setPossibleMove] = useState<{ row: number; col: number }[]>();
   const [initialP, setInitialP] = useState({ row: -1, col: -1 });
-  
+
   /*
   ** Cette fonction prend en parametre la position de la piece sélectionnée
   */
   function selectPiece(row: number, col: number) {
-    if (myTurn && positions[row][col]?.name.indexOf('Blanc') !== -1) {
-      let piece = positions[row][col];
-      if (positions && piece) {
-        setIsTouched(piece)
-        setPossibleMove(moves[piece.name](row, col, positions));
-        setInitialP({ row, col });
-      }
-    } else if (!myTurn && positions[row][col]?.name.indexOf('Noir') !== -1) {
-      let piece = positions[row][col];
-      if (positions && piece) {
-        setIsTouched(piece)
-        setPossibleMove(moves[piece.name](row, col, positions));
-        setInitialP({ row, col });
-      }
+     if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
+    let piece = positions[row][col];
+    if (positions && piece) {
+      setIsTouched(piece)
+      setPossibleMove(moves[piece.name](row, col, positions));
+      setInitialP({ row, col });
     }
+     }
   }
 
   /*
@@ -161,10 +158,20 @@ export default function Chessboard() {
     clone[initialP.row][initialP.col] = null;
     clone[row][col] = isTouched
     setPositions(clone);
+    // ENORME PROBLEME UN PION PEUT EN MANGER UN AUTRE (au bout de l'échiquier)
+    if ((row === 7 || row === 0) && clone[row][col]?.name.indexOf('Pion') === 0) {
+      promotion(row, col);
+
+    }
     setIsTouched(undefined);
     setPossibleMove(undefined);
-    socket.emit('positionsToBack', clone );
+    socket.emit('positionsToBack', clone);
     setMyTurn(!myTurn);
+  }
+
+  function promotion(row: any, col: any) {
+    console.log('row: ' + row, 'col: ' + col);
+
   }
 
   // Générer les cases de l'échiquier en utilisant deux boucles for
@@ -187,7 +194,7 @@ export default function Chessboard() {
                 <Image source={positions[row][col]?.src} style={{ width: 40, height: 40, borderWidth: 2, borderColor: 'red', borderRadius: 50 }} />
 
               </TouchableOpacity>
-              : 
+              :
               <TouchableOpacity onPress={() => { selectPiece(row, col) }}>
                 {/* Si une piece est sélectionnée la couleur de fond change (en rouge)  */}
                 {positions
@@ -202,13 +209,29 @@ export default function Chessboard() {
     return squares;
   }
 
-
+  const promoPiece: (Pieces | null)[] = [
+    { name: 'TourNoir', src: require('../assets/br.png') },
+    { name: 'CavalierNoir', src: require('../assets/bn.png') },
+    { name: 'FouNoir', src: require('../assets/bb.png') },
+    { name: 'ReineNoir', src: require('../assets/bq.png') }
+  ]
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Button title="test" onPress={() => setShowModale(true)} />
       <View style={styles.container}>
         {generateSquare()}
       </View>
+      {showModale && (
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', position: 'absolute' }}>
+          {promoPiece.map((item) =>
+            <View key={`${item?.src}`} style={{ width: '50%',  alignItems: 'center', justifyContent: 'center', backgroundColor: 'white' }}>
+              <Image source={item?.src} style={{ width: '90%' }} />
+            </View>
+          )}
+        </View>
+      )}
+
     </View>
   );
 }
