@@ -260,28 +260,89 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
     if (row === 0 && pieceDroite1 == null && pieceDroite2 == null && pieceDroite3?.name == 'TourNoir') {
       let rowP = 1;
       let echecPion = false;
-      //petit roque
+      let echecPiece = false;
       for (let col = 4; col < 8; col++) {
+        // on regarde si il y a un pion sur la 1ere ligne
         if (positions[rowP][col]?.name === 'PionBlanc') {
           echecPion = true;
-        } 
+        }
       }
-      if (!echecPion) {
+
+      // le cavalier peut mettre en échec le roi entre la row 0 et 2 et entre les col 2 et 7
+      for (let row = 1; row < 3; row++) {
+        for (let col = 2; col < 8; col++) {
+          if (positions[row][col]?.name === 'CavalierBlanc') {
+            echecPiece = true;
+          }
+        }
+      }
+
+      // on doit vérifier toutes les lignes et toutes les colonnes (pour les fous)
+      for (let row = 1; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          if (positions[row][col]?.name === 'FouBlanc') {
+            //converti le resultat de la fonction en string JSON
+            let fouMovesJson = JSON.stringify(moveFouBlanc(row, col, positions));
+            //converti la string JSON en objet
+            let fouMovesParsed = JSON.parse(fouMovesJson);
+            // il faut parcourir 'fouMovesParsed'qui est un tableau d'objet
+            for (let fM of fouMovesParsed) {
+              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
+              if (fM.row === 0 && (fM.col === 4 || fM.col === 5 || fM.col === 6)) {
+                echecPiece = true;
+              }
+            }
+          }
+        }
+      }
+
+      // Si aucunes autres pieces ne peux mettre en échec le roi pendant son roque alors il peut le faire
+      if (!echecPion && !echecPiece) {
         possibleMoves.push({ row: row, col: col + 2 });
       }
     }
     //Grand roque
     if (row === 0 && pieceGauche1 == null && pieceGauche2 == null && pieceGauche3 == null && pieceGauche4?.name == 'TourNoir') {
+      
       let rowP = 1;
       let echecPion = false;
-      //petit roque
+      let echecPiece = false;
       for (let col = 1; col < 5; col++) {
         if (positions[rowP][col]?.name === 'PionBlanc') {
           echecPion = true;
-        } 
+        }
       }
-      if (!echecPion) {
-        possibleMoves.push({ row: row, col: col + 2 });
+      
+      // le cavalier peut mettre en échec le roi entre la row 0 et 2 et entre les col 1 et 5
+      for (let row = 1; row < 3; row++) {
+        for (let col = 1; col < 6; col++) {
+          if (positions[row][col]?.name === 'CavalierBlanc') {
+            echecPiece = true;
+          }
+        }
+      }
+      
+      // on doit vérifier toutes les lignes et toutes les colonnes (pour les fous)
+      for (let row = 1; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          if (positions[row][col]?.name === 'FouBlanc') {
+            //converti le resultat de la fonction en string JSON
+            let fouMovesJson = JSON.stringify(moveFouBlanc(row, col, positions));
+            //converti la string JSON en objet
+            let fouMovesParsed = JSON.parse(fouMovesJson);
+            // il faut parcourir 'fouMovesParsed'qui est un tableau d'objet
+            for (let fM of fouMovesParsed) {
+              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
+              if (fM.row === 0 && (fM.col === 2 || fM.col === 3 || fM.col === 4)) {
+                echecPiece = true;
+              }
+            }
+          }
+        }
+      }
+      
+      if (!echecPion && !echecPiece) {
+        possibleMoves.push({ row: row, col: col - 2 });
       }
     }
   }
@@ -316,16 +377,46 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
   const pieceGauche4 = positions[row][col - 4];
 
   if (!hasMoved) {
+    //Petit roque
     if (row === 7 && pieceDroite1 == null && pieceDroite2 == null && pieceDroite3?.name == 'TourBlanc') {
       let rowP = 6;
       let echecPion = false;
-      //petit roque
+      let echecPiece = false;
       for (let col = 4; col < 8; col++) {
         if (positions[rowP][col]?.name === 'PionNoir') {
           echecPion = true;
-        } 
+        }
       }
-      if (!echecPion) {
+
+      // le cavalier peut mettre en échec le roi entre la row 5 et 7 et entre les col 2 et 7
+      for (let row = 5; row < 7; row++) {
+        for (let col = 2; col < 8; col++) {
+          if (positions[row][col]?.name === 'CavalierNoir') {
+            echecPiece = true;
+          }
+        }
+      }
+
+      // on doit vérifier toutes les lignes et toutes les colonnes (pour les fous)
+      for (let row = 1; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          if (positions[row][col]?.name === 'FouBlanc') {
+            //converti le resultat de la fonction en string JSON
+            let fouMovesJson = JSON.stringify(moveFouBlanc(row, col, positions));
+            //converti la string JSON en objet
+            let fouMovesParsed = JSON.parse(fouMovesJson);
+            // il faut parcourir 'fouMovesParsed'qui est un tableau d'objet
+            for (let fM of fouMovesParsed) {
+              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
+              if (fM.row === 7 && (fM.col === 4 || fM.col === 5 || fM.col === 6)) {
+                echecPiece = true;
+              }
+            }
+          }
+        }
+      }
+
+      if (!echecPion && !echecPiece) {
         possibleMoves.push({ row: row, col: col + 2 });
       }
     }
@@ -333,13 +424,42 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
     if (row === 7 && pieceGauche1 == null && pieceGauche2 == null && pieceGauche3 == null && pieceGauche4?.name == 'TourBlanc') {
       let rowP = 6;
       let echecPion = false;
-      //grand roque
+      let echecPiece = false;
       for (let col = 1; col < 5; col++) {
         if (positions[rowP][col]?.name === 'PionNoir') {
           echecPion = true;
-        } 
+        }
       }
-      if (!echecPion) {
+
+      // le cavalier peut mettre en échec le roi entre la row 5 et 7 et entre les col 1 et 5
+      for (let row = 5; row < 7; row++) {
+        for (let col = 1; col < 6; col++) {
+          if (positions[row][col]?.name === 'CavalierBlanc') {
+            echecPiece = true;
+          }
+        }
+      }
+
+      // on doit vérifier toutes les lignes et toutes les colonnes (pour les fous)
+      for (let row = 1; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          if (positions[row][col]?.name === 'FouBlanc') {
+            //converti le resultat de la fonction en string JSON
+            let fouMovesJson = JSON.stringify(moveFouBlanc(row, col, positions));
+            //converti la string JSON en objet
+            let fouMovesParsed = JSON.parse(fouMovesJson);
+            // il faut parcourir 'fouMovesParsed'qui est un tableau d'objet
+            for (let fM of fouMovesParsed) {
+              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
+              if (fM.row === 7 && (fM.col === 2 || fM.col === 3 || fM.col === 4)) {
+                echecPiece = true;
+              }
+            }
+          }
+        }
+      }
+
+      if (!echecPion && !echecPion) {
         possibleMoves.push({ row: row, col: col + 2 });
       }
     }
