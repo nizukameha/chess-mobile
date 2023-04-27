@@ -14,20 +14,25 @@ export default function Chessboard() {
 
   useEffect(() => {
     //obligé d'utiliser une var temporaire car les useState sont asynchrones
-    let temp = io("ws://10.0.10.64:8000");
+    let temp = io("ws://192.168.1.10:8000");
     setSocket(temp);
+    // on reçoit la position des pieces depuis le server 
     temp.on('positionsToFront', (data) => {
       setPositions(data);
       setMyTurn(true);
+      // on envoit une vibration pour signifier que c'est a notre tour de jouer
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
     })
     temp.on('myTurn', (data) => {
+      //le 1er connecté reçoit un bool depuis le server qui lui indique qu'il peut jouer le 1er
       setMyTurn(true);
       setWhite(true);
     })
   }, [])
 
-  // Défini les mouvements possibles pour chaques pieces
+  /* Défini les mouvements possibles pour chaques pieces
+  ** moves est un objet qui appel les fonctions pour voir le déplacement possible de chaque pieces
+  */
   const moves = {
     'TourNoir': moveTourNoir,
     'CavalierNoir': moveCavalierNoir,
@@ -59,7 +64,7 @@ export default function Chessboard() {
     { name: 'ReineBlanc', src: require('../assets/wq.png') }
   ]
 
-  // Définir la taille de chaque case de l'échiquier
+  // Défini la taille de chaque case de l'échiquier
   const squareSize = 40;
 
   // Défini les positions et les pièces sur l'échiquier
@@ -74,14 +79,14 @@ export default function Chessboard() {
       { name: 'TourNoir', src: require('../assets/br.png') }
     ],
     [
-      { name: 'PionBlanc', src: require('../assets/wp.png') },
-      { name: 'PionBlanc', src: require('../assets/wp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
-      { name: 'PionBlanc', src: require('../assets/wp.png') }
+      { name: 'PionNoir', src: require('../assets/bp.png') },
+      { name: 'PionNoir', src: require('../assets/bp.png') },
+      { name: 'PionNoir', src: require('../assets/bp.png') }
     ],
     [
       { name: 'FouNoir', src: require('../assets/bb.png') },
@@ -145,7 +150,7 @@ export default function Chessboard() {
     ],
   ])
 
-  // Définir les couleurs pour les cases claires et sombres
+  // Défini les couleurs pour les cases claires et sombres
   const lightSquareColor = '#F0D9B5';
   const darkSquareColor = '#B58863';
   const [isTouched, setIsTouched] = useState<Pieces>();
@@ -156,13 +161,18 @@ export default function Chessboard() {
   const [row, setRow] = useState<any>()
   const [col, setCol] = useState<any>()
 
+  // variable pour savoir si le roi noir ou blanc a déja bouger (pour empecher de roque)
   const [BlackKingHasMoved, setBlackKingHasMoved] = useState(false);
   const [WhiteKingHasMoved, setWhiteKingHasMoved] = useState(false);
 
-  /*
-  ** Cette fonction prend en parametre la position de la piece sélectionnée
+
+ /**
+  * Cette fonction prend en parametre la position de la piece sélectionnée
+  * @param row ligne
+  * @param col colonne
   */
   function selectPiece(row: number, col: number) {
+    // si c'est au tour de l'utilisateur de jouer et qu'il choisi la bonne couleur de pieces
     // if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
       let piece = positions[row][col];
       if (positions && piece) {
@@ -187,46 +197,56 @@ export default function Chessboard() {
    * @param col 
    */
   function movePiece(row: any, col: any) {
+    // recupere le tableau de position des pieces et en fait un clone
     const clone = JSON.parse(JSON.stringify(positions));
+    // la position de la piece qui vient de bougé est supprimé du tableau (case vide)
     clone[initialP.row][initialP.col] = null;
     clone[row][col] = isTouched;
-
+    // si le roi n'a pas encore bougé
     if (!BlackKingHasMoved) {
-      //Magnifique PETIT ROQUE <3 
+      /* Magnifique PETIT ROQUE <3 
+      ** verifie si le roi vient de bouger de 2 cases sur le coté et sur la meme ligne
+      ** Si c'est bien le cas cela veux dire que le joueur souhaite faire un roque
+      */
       if (clone[row][col]?.name == 'RoiNoir' && clone[row][initialP.col + 2] == clone[row][col]) {
+        // recupere la position de la tour
         let tour = clone[row][col + 1];
+        // deplace la tour pour terminer le roque
         clone[row][col + 1] = null;
         clone[row][col - 1] = tour;
       }
-      //Magnifique GRAND ROQUE <3 
+      // Magnifique GRAND ROQUE <3 (comme au dessus mais pour le roque avec la tour a gauche)
       if (clone[row][col]?.name == 'RoiNoir' && clone[row][initialP.col - 2] == clone[row][col]) {
         let tour = clone[row][col - 2];
         clone[row][col - 2] = null;
         clone[row][col + 1] = tour;
       }
     }
-
+    // roque blanc
     if (!WhiteKingHasMoved) {
-      //Magnifique PETIT ROQUE <3 
       if (clone[row][col]?.name == 'RoiBlanc' && clone[row][initialP.col + 2] == clone[row][col]) {
         let tour = clone[row][col + 1];
         clone[row][col + 1] = null;
         clone[row][col - 1] = tour;
       }
-      //Magnifique GRAND ROQUE <3 
       if (clone[row][col]?.name == 'RoiBlanc' && clone[row][initialP.col - 2] == clone[row][col]) {
         let tour = clone[row][col - 2];
         clone[row][col - 2] = null;
         clone[row][col + 1] = tour;
       }
     }
+    // le tableau de position se met a jour
     setPositions(clone);
+    // si un pion arrive au bout de l'échiquier il peut etre promu
     if ((row === 7 || row === 0) && clone[row][col]?.name.indexOf('Pion') === 0) {
       promotion(row, col);
     }
+    // la piece ne peut plus bouger
     setIsTouched(undefined);
     setPossibleMove(undefined);
+    // on envoit le tableau vers le server pour qu'il le renvoit a l'autre joueur
     socket.emit('positionsToBack', clone);
+    // Ce n'est plus au joueur actuel de jouer
     setMyTurn(!myTurn);
     if (clone[row][col]?.name == 'RoiBlanc') {
       setWhiteKingHasMoved(true);
@@ -243,6 +263,7 @@ export default function Chessboard() {
    * @param col 
    */
   function promotion(row: any, col: any) {
+    // une modale apparait pour sélectionner la piece qui va prendre la place du pion
     setShowModale(true)
     setRow(row)
     setCol(col)
@@ -254,9 +275,12 @@ export default function Chessboard() {
    */
   function selectPromotion(piece: Pieces) {
     const clone = JSON.parse(JSON.stringify(positions));
+    // le pion est remplacé par la piece sélectionnée
     clone[row][col] = piece;
     setPositions(clone);
+    // envoit vers le server le tableau de position des pieces
     socket.emit('positionsToBack', clone);
+    // ferme la modale
     setShowModale(false)
   }
 
@@ -265,9 +289,8 @@ export default function Chessboard() {
    * @returns 
    */
   function generateSquare() {
-
+    // tableau qui va contenir les cases de l'échiquier
     const squares = [];
-
 
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
@@ -278,10 +301,10 @@ export default function Chessboard() {
             {/* Une fois qu'une piece est sélectionnée on change la couleur de fond des cases qui sont des mouvements possibles */}
             {possibleMove && possibleMove.find(item => item.row !== undefined && item.row === row && item.col === col)
               ?
+              // ces cases de l'échiquier pourront accueillir le mouvement potentiel d'une piece
               <TouchableOpacity onPress={() => movePiece(row, col)}>
-
+                {/* pour le représenter visuellement, les cases on un rond rouge */}
                 <Image source={positions[row][col]?.src} style={{ width: 40, height: 40, borderWidth: 2, borderColor: 'red', borderRadius: 50 }} />
-
               </TouchableOpacity>
               :
               <TouchableOpacity onPress={() => { selectPiece(row, col) }}>
@@ -298,18 +321,16 @@ export default function Chessboard() {
     return squares;
   }
 
-  const [shadowAnim] = useState(new Animated.Value(0));
-
-
-
   return (
     <>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <View style={styles.container}>
+          {/* génération de l'échiquier */}
           {generateSquare()}
         </View>
 
         <View style={{ flexDirection: 'row', position: 'absolute' }}>
+          {/* génération des pieces blanches pour une promotions */}
           {white && showModale && promoPieceBlanche.map((item) =>
             <TouchableOpacity key={`${item?.name}`} onPress={() => selectPromotion(item)}>
               <Image source={item?.src} style={{ width: 90, height: 90, backgroundColor: "grey" }} />
@@ -319,6 +340,7 @@ export default function Chessboard() {
         </View>
 
         <View style={{ flexDirection: 'row', position: 'absolute' }}>
+          {/* génération des pieces noires pour une promotions */}
           {!white && showModale && promoPieceNoire.map((item) =>
             <TouchableOpacity onPress={() => selectPromotion(item)} >
               <Image source={item?.src} style={{ width: 90, height: 90, backgroundColor: "grey" }} />
