@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, Animated, Text } from 'react-native';
 import { Pieces } from '../entities';
 import { movePionBlanc, movePionNoir, moveTourBlanc, moveTourNoir, moveCavalierNoir, moveCavalierblanc, moveRoiNoir, moveRoiBlanc, moveFouBlanc, moveFouNoir, moveReineNoir, moveReineBlanc } from '../PieceMoves';
 
@@ -13,7 +13,7 @@ export default function Chessboard() {
 
   useEffect(() => {
     //obligé d'utiliser une var temporaire car les useState sont asynchrones
-    let temp = io("ws://10.0.10.201:8000");
+    let temp = io("ws://10.0.10.64:8000");
     setSocket(temp);
     temp.on('positionsToFront', (data) => {
       setPositions(data);
@@ -158,14 +158,14 @@ export default function Chessboard() {
   ** Cette fonction prend en parametre la position de la piece sélectionnée
   */
   function selectPiece(row: number, col: number) {
-    // if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
-    let piece = positions[row][col];
-    if (positions && piece) {
-      setIsTouched(piece)
-      setPossibleMove(moves[piece.name](row, col, positions));
-      setInitialP({ row, col });
+    if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
+      let piece = positions[row][col];
+      if (positions && piece) {
+        setIsTouched(piece)
+        setPossibleMove(moves[piece.name](row, col, positions));
+        setInitialP({ row, col });
+      }
     }
-    // }
   }
 
   /*
@@ -186,12 +186,12 @@ export default function Chessboard() {
     setMyTurn(!myTurn);
   }
 
-/**
- * Cette fonction prend en parametre la position du mouvement sélectionné
- * Elle permet d'ouvrir une modale pour la selection de la promotion et d'ensuite assigner row et col aux useState row et col
- * @param row 
- * @param col 
- */
+  /**
+   * Cette fonction prend en parametre la position du mouvement sélectionné
+   * Elle permet d'ouvrir une modale pour la selection de la promotion et d'ensuite assigner row et col aux useState row et col
+   * @param row 
+   * @param col 
+   */
   function promotion(row: any, col: any) {
     setShowModale(true)
     setRow(row)
@@ -248,12 +248,45 @@ export default function Chessboard() {
     return squares;
   }
 
+  const [shadowAnim] = useState(new Animated.Value(0));
 
+  const startAnimation = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(shadowAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: false,
+        }),
+        Animated.timing(shadowAnim, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: false,
+        }),
+      ])
+    ).start();
+  };
 
   return (
     <>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <View style={styles.container}>
+        <Animated.View
+        style={[
+          styles.shadow,
+          {
+            opacity: shadowAnim,
+            transform: [
+              {
+                scale: shadowAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1, 1.01],
+                }),
+              },
+            ],
+          },
+        ]}
+      />
           {generateSquare()}
         </View>
 
@@ -285,6 +318,12 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     width: 320,
     height: 320,
+    backgroundColor: 'red',
+    shadowColor: 'red',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 6,
+    elevation: 2,
   },
   square: {
     justifyContent: 'center',
@@ -294,4 +333,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'black',
   },
+  shadow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 320,
+    height: 320,
+    backgroundColor: 'red',
+    shadowColor: 'red',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 6,
+    elevation: 2,
+  }
 });
