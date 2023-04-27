@@ -258,11 +258,31 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
   // Verifier possibleMove des autres pieces sur chaque cases ou va se déplacer le roi
   if (!hasMoved) {
     if (row === 0 && pieceDroite1 == null && pieceDroite2 == null && pieceDroite3?.name == 'TourNoir') {
-      possibleMoves.push({ row: row, col: col + 2 });
+      let rowP = 1;
+      let echecPion = false;
+      //petit roque
+      for (let col = 4; col < 8; col++) {
+        if (positions[rowP][col]?.name === 'PionBlanc') {
+          echecPion = true;
+        } 
+      }
+      if (!echecPion) {
+        possibleMoves.push({ row: row, col: col + 2 });
+      }
     }
     //Grand roque
     if (row === 0 && pieceGauche1 == null && pieceGauche2 == null && pieceGauche3 == null && pieceGauche4?.name == 'TourNoir') {
-      possibleMoves.push({ row: row, col: col - 2 });
+      let rowP = 1;
+      let echecPion = false;
+      //petit roque
+      for (let col = 1; col < 5; col++) {
+        if (positions[rowP][col]?.name === 'PionBlanc') {
+          echecPion = true;
+        } 
+      }
+      if (!echecPion) {
+        possibleMoves.push({ row: row, col: col + 2 });
+      }
     }
   }
 
@@ -297,11 +317,31 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
 
   if (!hasMoved) {
     if (row === 7 && pieceDroite1 == null && pieceDroite2 == null && pieceDroite3?.name == 'TourBlanc') {
-      possibleMoves.push({ row: row, col: col + 2 });
+      let rowP = 6;
+      let echecPion = false;
+      //petit roque
+      for (let col = 4; col < 8; col++) {
+        if (positions[rowP][col]?.name === 'PionNoir') {
+          echecPion = true;
+        } 
+      }
+      if (!echecPion) {
+        possibleMoves.push({ row: row, col: col + 2 });
+      }
     }
     //Grand roque
     if (row === 7 && pieceGauche1 == null && pieceGauche2 == null && pieceGauche3 == null && pieceGauche4?.name == 'TourBlanc') {
-      possibleMoves.push({ row: row, col: col - 2 });
+      let rowP = 6;
+      let echecPion = false;
+      //grand roque
+      for (let col = 1; col < 5; col++) {
+        if (positions[rowP][col]?.name === 'PionNoir') {
+          echecPion = true;
+        } 
+      }
+      if (!echecPion) {
+        possibleMoves.push({ row: row, col: col + 2 });
+      }
     }
   }
 

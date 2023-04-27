@@ -75,13 +75,13 @@ export default function Chessboard() {
     ],
     [
       { name: 'PionBlanc', src: require('../assets/wp.png') },
+      { name: 'PionBlanc', src: require('../assets/wp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
-      { name: 'PionNoir', src: require('../assets/bp.png') },
-      { name: 'PionNoir', src: require('../assets/bp.png') }
+      { name: 'PionBlanc', src: require('../assets/wp.png') }
     ],
     [
       { name: 'FouNoir', src: require('../assets/bb.png') },
@@ -163,7 +163,7 @@ export default function Chessboard() {
   ** Cette fonction prend en parametre la position de la piece sélectionnée
   */
   function selectPiece(row: number, col: number) {
-    if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
+    // if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
       let piece = positions[row][col];
       if (positions && piece) {
         setIsTouched(piece);
@@ -176,7 +176,7 @@ export default function Chessboard() {
         }
         setInitialP({ row, col });
       }
-    }
+    //}
   }
 
 
