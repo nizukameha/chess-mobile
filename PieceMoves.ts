@@ -311,6 +311,21 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
         }
       }
 
+      for (let row = 0; row < 8; row++) {
+        for (let col = 4; col < 8; col++) {
+          if (positions[row][col]?.name === 'ReineBlanc') {
+            let reineMovesJson = JSON.stringify(moveReineBlanc(row, col, positions));
+            let reineMovesParsed = JSON.parse(reineMovesJson);
+            for (let tM of reineMovesParsed) {
+              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
+              if (tM.row === 0 && (tM.col === 4 || tM.col === 5 || tM.col === 6)) {
+                echecPiece = true;
+              }
+            }
+          }
+        }
+      }
+
       // Si aucunes autres pieces ne peux mettre en échec le roi pendant son roque alors il peut le faire
       if (!echecPion && !echecPiece) {
         possibleMoves.push({ row: row, col: col + 2 });
@@ -357,11 +372,28 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
       }
 
       for (let row = 0; row < 8; row++) {
-        for (let col = 4; col < 8; col++) {
+        for (let col = 2; col < 5; col++) {
           if (positions[row][col]?.name === 'TourBlanc') {
             let tourMovesJson = JSON.stringify(moveTourBlanc(row, col, positions));
             let tourMovesParsed = JSON.parse(tourMovesJson);
             for (let tM of tourMovesParsed) {
+              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
+              if (tM.row === 0 && (tM.col === 2 || tM.col === 3 || tM.col === 4)) {
+                console.log('ok');
+                
+                echecPiece = true;
+              }
+            }
+          }
+        }
+      }
+
+      for (let row = 0; row < 8; row++) {
+        for (let col = 4; col < 8; col++) {
+          if (positions[row][col]?.name === 'ReineBlanc') {
+            let reineMovesJson = JSON.stringify(moveReineBlanc(row, col, positions));
+            let reineMovesParsed = JSON.parse(reineMovesJson);
+            for (let tM of reineMovesParsed) {
               // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
               if (tM.row === 0 && (tM.col === 2 || tM.col === 3 || tM.col === 4)) {
                 echecPiece = true;
@@ -461,6 +493,21 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
         }
       }
 
+      for (let row = 0; row < 8; row++) {
+        for (let col = 4; col < 8; col++) {
+          if (positions[row][col]?.name === 'ReineNoir') {
+            let reineMovesJson = JSON.stringify(moveReineBlanc(row, col, positions));
+            let reineMovesParsed = JSON.parse(reineMovesJson);
+            for (let tM of reineMovesParsed) {
+              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
+              if (tM.row === 7 && (tM.col === 4 || tM.col === 5 || tM.col === 6)) {
+                echecPiece = true;
+              }
+            }
+          }
+        }
+      }
+
       if (!echecPion && !echecPiece) {
         possibleMoves.push({ row: row, col: col + 2 });
       }
@@ -510,6 +557,21 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
             let tourMovesJson = JSON.stringify(moveTourBlanc(row, col, positions));
             let tourMovesParsed = JSON.parse(tourMovesJson);
             for (let tM of tourMovesParsed) {
+              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
+              if (tM.row === 7 && (tM.col === 2 || tM.col === 3 || tM.col === 4)) {
+                echecPiece = true;
+              }
+            }
+          }
+        }
+      }
+
+      for (let row = 0; row < 8; row++) {
+        for (let col = 4; col < 8; col++) {
+          if (positions[row][col]?.name === 'ReineNoir') {
+            let reineMovesJson = JSON.stringify(moveReineBlanc(row, col, positions));
+            let reineMovesParsed = JSON.parse(reineMovesJson);
+            for (let tM of reineMovesParsed) {
               // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
               if (tM.row === 7 && (tM.col === 2 || tM.col === 3 || tM.col === 4)) {
                 echecPiece = true;

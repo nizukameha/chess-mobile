@@ -71,11 +71,12 @@ export default function Chessboard() {
   const [positions, setPositions] = useState<(Pieces | null)[][]>([
     [
       { name: 'TourNoir', src: require('../assets/br.png') },
-      null,
-      null,
-      null,
+      { name: 'CavalierNoir', src: require('../assets/bn.png') },
+      { name: 'FouNoir', src: require('../assets/bb.png') },
+      { name: 'ReineNoir', src: require('../assets/bq.png') },
       { name: 'RoiNoir', src: require('../assets/bk.png') },
-      null, null,
+      { name: 'FouNoir', src: require('../assets/bb.png') },
+      { name: 'CavalierNoir', src: require('../assets/bn.png') },
       { name: 'TourNoir', src: require('../assets/br.png') }
     ],
     [
@@ -89,8 +90,8 @@ export default function Chessboard() {
       { name: 'PionNoir', src: require('../assets/bp.png') }
     ],
     [
-      { name: 'FouNoir', src: require('../assets/bb.png') },
-      { name: 'CavalierNoir', src: require('../assets/bn.png') },
+      null,
+      null,
       null,
       null,
       null,
