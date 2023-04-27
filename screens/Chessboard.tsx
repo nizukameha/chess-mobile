@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Pieces } from '../entities';
 import { movePionBlanc, movePionNoir, moveTourBlanc, moveTourNoir, moveCavalierNoir, moveCavalierblanc, moveRoiNoir, moveRoiBlanc, moveFouBlanc, moveFouNoir, moveReineNoir, moveReineBlanc } from '../PieceMoves';
+import * as Haptics from 'expo-haptics';
 
 export default function Chessboard() {
 
@@ -18,10 +19,14 @@ export default function Chessboard() {
     temp.on('positionsToFront', (data) => {
       setPositions(data);
       setMyTurn(true);
+      Haptics.impactAsync(
+        Haptics.ImpactFeedbackStyle.Heavy)
     })
     temp.on('myTurn', (data) => {
       setMyTurn(true);
       setWhite(true);
+      Haptics.impactAsync(
+        Haptics.ImpactFeedbackStyle.Heavy)
     })
   }, [])
 
@@ -158,14 +163,14 @@ export default function Chessboard() {
   ** Cette fonction prend en parametre la position de la piece sélectionnée
   */
   function selectPiece(row: number, col: number) {
-    // if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
-    let piece = positions[row][col];
-    if (positions && piece) {
-      setIsTouched(piece)
-      setPossibleMove(moves[piece.name](row, col, positions));
-      setInitialP({ row, col });
+    if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
+      let piece = positions[row][col];
+      if (positions && piece) {
+        setIsTouched(piece)
+        setPossibleMove(moves[piece.name](row, col, positions));
+        setInitialP({ row, col });
+      }
     }
-    // }
   }
 
   /*
@@ -186,12 +191,12 @@ export default function Chessboard() {
     setMyTurn(!myTurn);
   }
 
-/**
- * Cette fonction prend en parametre la position du mouvement sélectionné
- * Elle permet d'ouvrir une modale pour la selection de la promotion et d'ensuite assigner row et col aux useState row et col
- * @param row 
- * @param col 
- */
+  /**
+   * Cette fonction prend en parametre la position du mouvement sélectionné
+   * Elle permet d'ouvrir une modale pour la selection de la promotion et d'ensuite assigner row et col aux useState row et col
+   * @param row 
+   * @param col 
+   */
   function promotion(row: any, col: any) {
     setShowModale(true)
     setRow(row)
