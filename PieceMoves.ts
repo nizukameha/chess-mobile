@@ -4,32 +4,32 @@ export const movePionBlanc = (row: number, col: number, positions: (Pieces | nul
   //resultat
   const possibleMoves = [{}];
 
-    const pieceDevant1 = positions[row - 1][col - 1];
-    const pieceDevant2 = positions[row - 1][col + 1];
+  const pieceDevant1 = positions[row - 1][col - 1];
+  const pieceDevant2 = positions[row - 1][col + 1];
 
-    //Si il ya une piece devant le pion (a droite ou a gauche) et qu'elle est noir
-    if (pieceDevant1 && pieceDevant1.name.indexOf('Noir') !== -1 || pieceDevant2 && pieceDevant2.name.indexOf('Noir') !== -1) {
-      //Si il y a une piece a gauche et une piece a droite alors il peut y aller
-      if (positions[row - 1][col - 1] !== null && positions[row - 1][col + 1] !== null) {
-        possibleMoves.push({ row: row - 1, col: col - 1 }, { row: row - 1, col: col + 1 });
-      }
-      // Si il y a une piece a gauche alors il peut y aller
-      else if (positions[row - 1][col - 1] !== null) {
-        possibleMoves.push({ row: row - 1, col: col - 1 });
-      }
-      // Si il y a une piece a droite alors il peut y aller
-      else if (positions[row - 1][col + 1] !== null) {
-        possibleMoves.push({ row: row - 1, col: col + 1 });
-      }
+  //Si il ya une piece devant le pion (a droite ou a gauche) et qu'elle est noir
+  if (pieceDevant1 && pieceDevant1.name.indexOf('Noir') !== -1 || pieceDevant2 && pieceDevant2.name.indexOf('Noir') !== -1) {
+    //Si il y a une piece a gauche et une piece a droite alors il peut y aller
+    if (positions[row - 1][col - 1] !== null && positions[row - 1][col + 1] !== null) {
+      possibleMoves.push({ row: row - 1, col: col - 1 }, { row: row - 1, col: col + 1 });
     }
-    //Si il y a une piece devant, le pion ne peut pas avancer
-    if (positions[row - 1][col] == null) {
-      possibleMoves.push({ row: row - 1, col: col });
-      if (row === 6) {
-        possibleMoves.push({ row: row - 2, col: col });
-      }
+    // Si il y a une piece a gauche alors il peut y aller
+    else if (positions[row - 1][col - 1] !== null) {
+      possibleMoves.push({ row: row - 1, col: col - 1 });
     }
-    return possibleMoves;
+    // Si il y a une piece a droite alors il peut y aller
+    else if (positions[row - 1][col + 1] !== null) {
+      possibleMoves.push({ row: row - 1, col: col + 1 });
+    }
+  }
+  //Si il y a une piece devant, le pion ne peut pas avancer
+  if (positions[row - 1][col] == null) {
+    possibleMoves.push({ row: row - 1, col: col });
+    if (row === 6) {
+      possibleMoves.push({ row: row - 2, col: col });
+    }
+  }
+  return possibleMoves;
 }
 
 export const movePionNoir = (row: number, col: number, positions: (Pieces | null)[][]) => {
@@ -244,6 +244,20 @@ export const moveCavalierNoir = (row: number, col: number, positions: (Pieces | 
  */
 export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)[][]) => {
   const possibleMoves = [];
+
+  const pieceDroite1 = positions[row][col + 1];
+  const pieceDroite2 = positions[row][col + 2];
+  const pieceDroite3 = positions[row][col + 3];
+
+  console.log('pieceDroite1', pieceDroite1);
+  console.log('pieceDroite2', pieceDroite2);
+  console.log('pieceDroite3', pieceDroite3);
+
+
+  if (pieceDroite1 == null && pieceDroite2 == null && pieceDroite3?.name == 'TourNoir') {
+    console.log('oui');
+    possibleMoves.push({ row: row, col: col + 2 });
+  }
 
   // Vérifier les cases autour du roi
   for (let i = -1; i <= 1; i++) {

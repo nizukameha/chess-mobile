@@ -163,14 +163,14 @@ export default function Chessboard() {
   ** Cette fonction prend en parametre la position de la piece sélectionnée
   */
   function selectPiece(row: number, col: number) {
-    if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
+    //if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
       let piece = positions[row][col];
       if (positions && piece) {
         setIsTouched(piece)
         setPossibleMove(moves[piece.name](row, col, positions));
         setInitialP({ row, col });
       }
-    }
+    //}
   }
 
   /*
