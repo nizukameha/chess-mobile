@@ -250,43 +250,12 @@ export default function Chessboard() {
 
   const [shadowAnim] = useState(new Animated.Value(0));
 
-  const startAnimation = () => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(shadowAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: false,
-        }),
-        Animated.timing(shadowAnim, {
-          toValue: 0,
-          duration: 2000,
-          useNativeDriver: false,
-        }),
-      ])
-    ).start();
-  };
+
 
   return (
     <>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <View style={styles.container}>
-        <Animated.View
-        style={[
-          styles.shadow,
-          {
-            opacity: shadowAnim,
-            transform: [
-              {
-                scale: shadowAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [1, 1.01],
-                }),
-              },
-            ],
-          },
-        ]}
-      />
           {generateSquare()}
         </View>
 
@@ -318,8 +287,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     width: 320,
     height: 320,
-    backgroundColor: 'red',
-    shadowColor: 'red',
+    backgroundColor: 'white',
+    shadowColor: 'black',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
     shadowRadius: 6,
@@ -329,21 +298,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  text: {
-    fontSize: 12,
-    color: 'black',
-  },
-  shadow: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 320,
-    height: 320,
-    backgroundColor: 'red',
-    shadowColor: 'red',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 6,
-    elevation: 2,
-  }
 });
