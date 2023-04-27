@@ -13,7 +13,7 @@ export default function Chessboard() {
 
   useEffect(() => {
     //obligé d'utiliser une var temporaire car les useState sont asynchrones
-    let temp = io("ws://10.0.10.64:8000");
+    let temp = io("ws://10.0.10.201:8000");
     setSocket(temp);
     temp.on('positionsToFront', (data) => {
       setPositions(data);
@@ -25,7 +25,7 @@ export default function Chessboard() {
     })
   }, [])
 
-
+  // Défini les mouvements possibles pour chaques pieces
   const moves = {
     'TourNoir': moveTourNoir,
     'CavalierNoir': moveCavalierNoir,
@@ -42,9 +42,25 @@ export default function Chessboard() {
     'PionBlanc': movePionBlanc
   }
 
+  // Défini les pièces disponible pour une promotion
+  const promoPieceNoire: (Pieces | null)[] = [
+    { name: 'TourNoir', src: require('../assets/br.png') },
+    { name: 'CavalierNoir', src: require('../assets/bn.png') },
+    { name: 'FouNoir', src: require('../assets/bb.png') },
+    { name: 'ReineNoir', src: require('../assets/bq.png') }
+  ]
+
+  const promoPieceBlanche: (Pieces | null)[] = [
+    { name: 'TourBlanc', src: require('../assets/wr.png') },
+    { name: 'CavalierBlanc', src: require('../assets/wn.png') },
+    { name: 'FouBlanc', src: require('../assets/wb.png') },
+    { name: 'ReineBlanc', src: require('../assets/wq.png') }
+  ]
+
   // Définir la taille de chaque case de l'échiquier
   const squareSize = 40;
 
+  // Défini les positions et les pièces sur l'échiquier
   const [positions, setPositions] = useState<(Pieces | null)[][]>([
     [
       { name: 'TourNoir', src: require('../assets/br.png') },
@@ -52,12 +68,11 @@ export default function Chessboard() {
       { name: 'FouNoir', src: require('../assets/bb.png') },
       { name: 'ReineNoir', src: require('../assets/bq.png') },
       { name: 'RoiNoir', src: require('../assets/bk.png') },
-      { name: 'FouNoir', src: require('../assets/bb.png') },
-      { name: 'CavalierNoir', src: require('../assets/bn.png') },
+      null, null,
       { name: 'TourNoir', src: require('../assets/br.png') }
     ],
     [
-      { name: 'PionNoir', src: require('../assets/bp.png') },
+      { name: 'PionBlanc', src: require('../assets/wp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
       { name: 'PionNoir', src: require('../assets/bp.png') },
@@ -67,8 +82,8 @@ export default function Chessboard() {
       { name: 'PionNoir', src: require('../assets/bp.png') }
     ],
     [
-      null,
-      null,
+      { name: 'FouNoir', src: require('../assets/bb.png') },
+      { name: 'CavalierNoir', src: require('../assets/bn.png') },
       null,
       null,
       null,
@@ -135,18 +150,22 @@ export default function Chessboard() {
   const [possibleMove, setPossibleMove] = useState<{ row: number; col: number }[]>();
   const [initialP, setInitialP] = useState({ row: -1, col: -1 });
 
+  //Permet de definir une position pour la promotion
+  const [row, setRow] = useState<any>()
+  const [col, setCol] = useState<any>()
+
   /*
   ** Cette fonction prend en parametre la position de la piece sélectionnée
   */
   function selectPiece(row: number, col: number) {
-    if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
-      let piece = positions[row][col];
-      if (positions && piece) {
-        setIsTouched(piece)
-        setPossibleMove(moves[piece.name](row, col, positions));
-        setInitialP({ row, col });
-      }
+    // if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
+    let piece = positions[row][col];
+    if (positions && piece) {
+      setIsTouched(piece)
+      setPossibleMove(moves[piece.name](row, col, positions));
+      setInitialP({ row, col });
     }
+    // }
   }
 
   /*
@@ -158,10 +177,8 @@ export default function Chessboard() {
     clone[initialP.row][initialP.col] = null;
     clone[row][col] = isTouched
     setPositions(clone);
-    // ENORME PROBLEME UN PION PEUT EN MANGER UN AUTRE (au bout de l'échiquier)
     if ((row === 7 || row === 0) && clone[row][col]?.name.indexOf('Pion') === 0) {
       promotion(row, col);
-
     }
     setIsTouched(undefined);
     setPossibleMove(undefined);
@@ -169,32 +186,34 @@ export default function Chessboard() {
     setMyTurn(!myTurn);
   }
 
-  const [row, setRow] = useState<any>()
-  const [col, setCol] = useState<any>()
-
+/**
+ * Cette fonction prend en parametre la position du mouvement sélectionné
+ * Elle permet d'ouvrir une modale pour la selection de la promotion et d'ensuite assigner row et col aux useState row et col
+ * @param row 
+ * @param col 
+ */
   function promotion(row: any, col: any) {
     setShowModale(true)
-
     setRow(row)
     setCol(col)
-
-    console.log('position promotion', 'row ', row, 'col ', col);
-
   }
 
+  /**
+   * Cette fonction fait la promotion puis masque la modale
+   * @param piece J'attend une piece en argument
+   */
   function selectPromotion(piece: Pieces) {
-
-    console.log('Promotion Piece', piece);
-
     const clone = JSON.parse(JSON.stringify(positions));
     clone[row][col] = piece;
-
     setPositions(clone);
     socket.emit('positionsToBack', clone);
     setShowModale(false)
   }
 
-  // Générer les cases de l'échiquier en utilisant deux boucles for
+  /**
+   * Générer les cases de l'échiquier en utilisant deux boucles for
+   * @returns 
+   */
   function generateSquare() {
 
     const squares = [];
@@ -229,19 +248,7 @@ export default function Chessboard() {
     return squares;
   }
 
-  const promoPieceNoire: (Pieces | null)[] = [
-    { name: 'TourNoir', src: require('../assets/br.png') },
-    { name: 'CavalierNoir', src: require('../assets/bn.png') },
-    { name: 'FouNoir', src: require('../assets/bb.png') },
-    { name: 'ReineNoir', src: require('../assets/bq.png') }
-  ]
 
-  const promoPieceBlanche: (Pieces | null)[] = [
-    { name: 'TourBlanc', src: require('../assets/wr.png') },
-    { name: 'CavalierBlanc', src: require('../assets/wn.png') },
-    { name: 'FouBlanc', src: require('../assets/wb.png') },
-    { name: 'ReineBlanc', src: require('../assets/wq.png') }
-  ]
 
   return (
     <>
@@ -250,20 +257,23 @@ export default function Chessboard() {
           {generateSquare()}
         </View>
 
-        {!white && showModale && promoPieceNoire.map((item) =>
-          <View key={`${item?.name}`} style={{ flexDirection: 'row' }}>
-            <TouchableOpacity onPress={() => selectPromotion(item)} >
-              <Image source={item?.src} style={{ width: 90, height: 90 }} />
+        <View style={{ flexDirection: 'row', position: 'absolute' }}>
+          {white && showModale && promoPieceBlanche.map((item) =>
+            <TouchableOpacity key={`${item?.name}`} onPress={() => selectPromotion(item)}>
+              <Image source={item?.src} style={{ width: 90, height: 90, backgroundColor: "grey" }} />
             </TouchableOpacity>
-          </View>
-        )}
-        {white && showModale && promoPieceBlanche.map((item) =>
-          <View key={`${item?.name}`} style={{ flexDirection: 'row' }}>
+          )
+          }
+        </View>
+
+        <View style={{ flexDirection: 'row', position: 'absolute' }}>
+          {!white && showModale && promoPieceNoire.map((item) =>
             <TouchableOpacity onPress={() => selectPromotion(item)} >
-              <Image source={item?.src} style={{ width: 90, height: 90 }} />
+              <Image source={item?.src} style={{ width: 90, height: 90, backgroundColor: "grey" }} />
             </TouchableOpacity>
-          </View>
-        )}
+          )}
+        </View>
+
       </View>
     </>
   );
