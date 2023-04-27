@@ -19,14 +19,11 @@ export default function Chessboard() {
     temp.on('positionsToFront', (data) => {
       setPositions(data);
       setMyTurn(true);
-      Haptics.impactAsync(
-        Haptics.ImpactFeedbackStyle.Heavy)
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
     })
     temp.on('myTurn', (data) => {
       setMyTurn(true);
       setWhite(true);
-      Haptics.impactAsync(
-        Haptics.ImpactFeedbackStyle.Heavy)
     })
   }, [])
 
@@ -69,9 +66,9 @@ export default function Chessboard() {
   const [positions, setPositions] = useState<(Pieces | null)[][]>([
     [
       { name: 'TourNoir', src: require('../assets/br.png') },
-      { name: 'CavalierNoir', src: require('../assets/bn.png') },
-      { name: 'FouNoir', src: require('../assets/bb.png') },
-      { name: 'ReineNoir', src: require('../assets/bq.png') },
+      null,
+      null,
+      null,
       { name: 'RoiNoir', src: require('../assets/bk.png') },
       null, null,
       { name: 'TourNoir', src: require('../assets/br.png') }
@@ -159,28 +156,70 @@ export default function Chessboard() {
   const [row, setRow] = useState<any>()
   const [col, setCol] = useState<any>()
 
+  const [BlackKingHasMoved, setBlackKingHasMoved] = useState(false);
+  const [WhiteKingHasMoved, setWhiteKingHasMoved] = useState(false);
+
   /*
   ** Cette fonction prend en parametre la position de la piece sélectionnée
   */
   function selectPiece(row: number, col: number) {
-    //if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
+    if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
       let piece = positions[row][col];
       if (positions && piece) {
-        setIsTouched(piece)
-        setPossibleMove(moves[piece.name](row, col, positions));
+        setIsTouched(piece);
+        if (piece.name == 'RoiNoir') {
+          setPossibleMove(moves[piece.name](row, col, positions, BlackKingHasMoved));
+        } else if (piece.name == 'RoiBlanc') {
+          setPossibleMove(moves[piece.name](row, col, positions, WhiteKingHasMoved));
+        } else {
+          setPossibleMove(moves[piece.name](row, col, positions));
+        }
         setInitialP({ row, col });
       }
-    //}
+    }
   }
 
-  /*
-  ** Cette fonction prend en parametre la position du mouvement sélectionné
-  ** Il faut intervertir avec setPositions la piece dans le tableau
-  */
+
+  /**
+   * Cette fonction prend en parametre la position du mouvement sélectionné
+   * Il faut intervertir avec setPositions la piece dans le tableau
+   * @param row 
+   * @param col 
+   */
   function movePiece(row: any, col: any) {
     const clone = JSON.parse(JSON.stringify(positions));
     clone[initialP.row][initialP.col] = null;
-    clone[row][col] = isTouched
+    clone[row][col] = isTouched;
+
+    if (!BlackKingHasMoved) {
+      //Magnifique PETIT ROQUE <3 
+      if (clone[row][col]?.name == 'RoiNoir' && clone[row][initialP.col + 2] == clone[row][col]) {
+        let tour = clone[row][col + 1];
+        clone[row][col + 1] = null;
+        clone[row][col - 1] = tour;
+      }
+      //Magnifique GRAND ROQUE <3 
+      if (clone[row][col]?.name == 'RoiNoir' && clone[row][initialP.col - 2] == clone[row][col]) {
+        let tour = clone[row][col - 2];
+        clone[row][col - 2] = null;
+        clone[row][col + 1] = tour;
+      }
+    }
+
+    if (!WhiteKingHasMoved) {
+      //Magnifique PETIT ROQUE <3 
+      if (clone[row][col]?.name == 'RoiBlanc' && clone[row][initialP.col + 2] == clone[row][col]) {
+        let tour = clone[row][col + 1];
+        clone[row][col + 1] = null;
+        clone[row][col - 1] = tour;
+      }
+      //Magnifique GRAND ROQUE <3 
+      if (clone[row][col]?.name == 'RoiBlanc' && clone[row][initialP.col - 2] == clone[row][col]) {
+        let tour = clone[row][col - 2];
+        clone[row][col - 2] = null;
+        clone[row][col + 1] = tour;
+      }
+    }
     setPositions(clone);
     if ((row === 7 || row === 0) && clone[row][col]?.name.indexOf('Pion') === 0) {
       promotion(row, col);
@@ -189,6 +228,12 @@ export default function Chessboard() {
     setPossibleMove(undefined);
     socket.emit('positionsToBack', clone);
     setMyTurn(!myTurn);
+    if (clone[row][col]?.name == 'RoiBlanc') {
+      setWhiteKingHasMoved(true);
+    }
+    if (clone[row][col]?.name == 'RoiNoir') {
+      setBlackKingHasMoved(true);
+    }
   }
 
   /**

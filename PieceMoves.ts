@@ -242,21 +242,28 @@ export const moveCavalierNoir = (row: number, col: number, positions: (Pieces | 
  * @param positions Un tableau à deux dimensions représentant le plateau d'échecs et les pièces sur le plateau.
  * @returns Un tableau d'objets contenant les coordonnées de chaque case où le Roi peut se déplacer.
  */
-export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)[][]) => {
+export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)[][], hasMoved: boolean) => {
   const possibleMoves = [];
 
   const pieceDroite1 = positions[row][col + 1];
   const pieceDroite2 = positions[row][col + 2];
   const pieceDroite3 = positions[row][col + 3];
 
-  console.log('pieceDroite1', pieceDroite1);
-  console.log('pieceDroite2', pieceDroite2);
-  console.log('pieceDroite3', pieceDroite3);
+  const pieceGauche1 = positions[row][col - 1];
+  const pieceGauche2 = positions[row][col - 2];
+  const pieceGauche3 = positions[row][col - 3];
+  const pieceGauche4 = positions[row][col - 4];
 
-
-  if (pieceDroite1 == null && pieceDroite2 == null && pieceDroite3?.name == 'TourNoir') {
-    console.log('oui');
-    possibleMoves.push({ row: row, col: col + 2 });
+  //Petit roque
+  // Verifier possibleMove des autres pieces sur chaque cases ou va se déplacer le roi
+  if (!hasMoved) {
+    if (row === 0 && pieceDroite1 == null && pieceDroite2 == null && pieceDroite3?.name == 'TourNoir') {
+      possibleMoves.push({ row: row, col: col + 2 });
+    }
+    //Grand roque
+    if (row === 0 && pieceGauche1 == null && pieceGauche2 == null && pieceGauche3 == null && pieceGauche4?.name == 'TourNoir') {
+      possibleMoves.push({ row: row, col: col - 2 });
+    }
   }
 
   // Vérifier les cases autour du roi
@@ -276,8 +283,27 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
   return possibleMoves;
 }
 
-export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null)[][]) => {
+export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null)[][], hasMoved: boolean) => {
   const possibleMoves = [];
+
+  const pieceDroite1 = positions[row][col + 1];
+  const pieceDroite2 = positions[row][col + 2];
+  const pieceDroite3 = positions[row][col + 3];
+
+  const pieceGauche1 = positions[row][col - 1];
+  const pieceGauche2 = positions[row][col - 2];
+  const pieceGauche3 = positions[row][col - 3];
+  const pieceGauche4 = positions[row][col - 4];
+
+  if (!hasMoved) {
+    if (row === 7 && pieceDroite1 == null && pieceDroite2 == null && pieceDroite3?.name == 'TourBlanc') {
+      possibleMoves.push({ row: row, col: col + 2 });
+    }
+    //Grand roque
+    if (row === 7 && pieceGauche1 == null && pieceGauche2 == null && pieceGauche3 == null && pieceGauche4?.name == 'TourBlanc') {
+      possibleMoves.push({ row: row, col: col - 2 });
+    }
+  }
 
   // Vérifier les cases autour du roi
   for (let i = -1; i <= 1; i++) {
