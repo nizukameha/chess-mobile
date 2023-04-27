@@ -296,6 +296,21 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
         }
       }
 
+      for (let row = 0; row < 8; row++) {
+        for (let col = 4; col < 8; col++) {
+          if (positions[row][col]?.name === 'TourBlanc') {
+            let tourMovesJson = JSON.stringify(moveTourBlanc(row, col, positions));
+            let tourMovesParsed = JSON.parse(tourMovesJson);
+            for (let tM of tourMovesParsed) {
+              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
+              if (tM.row === 0 && (tM.col === 4 || tM.col === 5 || tM.col === 6)) {
+                echecPiece = true;
+              }
+            }
+          }
+        }
+      }
+
       // Si aucunes autres pieces ne peux mettre en échec le roi pendant son roque alors il peut le faire
       if (!echecPion && !echecPiece) {
         possibleMoves.push({ row: row, col: col + 2 });
@@ -334,6 +349,21 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
             for (let fM of fouMovesParsed) {
               // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
               if (fM.row === 0 && (fM.col === 2 || fM.col === 3 || fM.col === 4)) {
+                echecPiece = true;
+              }
+            }
+          }
+        }
+      }
+
+      for (let row = 0; row < 8; row++) {
+        for (let col = 4; col < 8; col++) {
+          if (positions[row][col]?.name === 'TourBlanc') {
+            let tourMovesJson = JSON.stringify(moveTourBlanc(row, col, positions));
+            let tourMovesParsed = JSON.parse(tourMovesJson);
+            for (let tM of tourMovesParsed) {
+              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
+              if (tM.row === 0 && (tM.col === 2 || tM.col === 3 || tM.col === 4)) {
                 echecPiece = true;
               }
             }
@@ -400,7 +430,7 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
       // on doit vérifier toutes les lignes et toutes les colonnes (pour les fous)
       for (let row = 1; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
-          if (positions[row][col]?.name === 'FouBlanc') {
+          if (positions[row][col]?.name === 'FouNoir') {
             //converti le resultat de la fonction en string JSON
             let fouMovesJson = JSON.stringify(moveFouBlanc(row, col, positions));
             //converti la string JSON en objet
@@ -409,6 +439,21 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
             for (let fM of fouMovesParsed) {
               // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
               if (fM.row === 7 && (fM.col === 4 || fM.col === 5 || fM.col === 6)) {
+                echecPiece = true;
+              }
+            }
+          }
+        }
+      }
+
+      for (let row = 0; row < 8; row++) {
+        for (let col = 4; col < 8; col++) {
+          if (positions[row][col]?.name === 'TourNoir') {
+            let tourMovesJson = JSON.stringify(moveTourBlanc(row, col, positions));
+            let tourMovesParsed = JSON.parse(tourMovesJson);
+            for (let tM of tourMovesParsed) {
+              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
+              if (tM.row === 7 && (tM.col === 4 || tM.col === 5 || tM.col === 6)) {
                 echecPiece = true;
               }
             }
@@ -434,7 +479,7 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
       // le cavalier peut mettre en échec le roi entre la row 5 et 7 et entre les col 1 et 5
       for (let row = 5; row < 7; row++) {
         for (let col = 1; col < 6; col++) {
-          if (positions[row][col]?.name === 'CavalierBlanc') {
+          if (positions[row][col]?.name === 'CavalierNoir') {
             echecPiece = true;
           }
         }
@@ -443,7 +488,7 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
       // on doit vérifier toutes les lignes et toutes les colonnes (pour les fous)
       for (let row = 1; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
-          if (positions[row][col]?.name === 'FouBlanc') {
+          if (positions[row][col]?.name === 'FouNoir') {
             //converti le resultat de la fonction en string JSON
             let fouMovesJson = JSON.stringify(moveFouBlanc(row, col, positions));
             //converti la string JSON en objet
@@ -452,6 +497,21 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
             for (let fM of fouMovesParsed) {
               // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
               if (fM.row === 7 && (fM.col === 2 || fM.col === 3 || fM.col === 4)) {
+                echecPiece = true;
+              }
+            }
+          }
+        }
+      }
+
+      for (let row = 0; row < 8; row++) {
+        for (let col = 4; col < 8; col++) {
+          if (positions[row][col]?.name === 'TourNoir') {
+            let tourMovesJson = JSON.stringify(moveTourBlanc(row, col, positions));
+            let tourMovesParsed = JSON.parse(tourMovesJson);
+            for (let tM of tourMovesParsed) {
+              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
+              if (tM.row === 7 && (tM.col === 2 || tM.col === 3 || tM.col === 4)) {
                 echecPiece = true;
               }
             }
