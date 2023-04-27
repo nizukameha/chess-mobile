@@ -1,13 +1,11 @@
 import { io } from "socket.io-client";
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, Button, Text } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Pieces } from '../entities';
 import { movePionBlanc, movePionNoir, moveTourBlanc, moveTourNoir, moveCavalierNoir, moveCavalierblanc, moveRoiNoir, moveRoiBlanc, moveFouBlanc, moveFouNoir, moveReineNoir, moveReineBlanc } from '../PieceMoves';
 
-export default function Chessboard({ route }: any) {
+export default function Chessboard() {
 
-  const { image } = route.params;
-  const { pseudo } = route.params;
   const [socket, setSocket] = useState(io);
   const [myTurn, setMyTurn] = useState(false);
   const [white, setWhite] = useState(false);
@@ -248,11 +246,6 @@ export default function Chessboard({ route }: any) {
   return (
     <>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-          <Text style={{ fontSize: 25, color: myTurn ? 'red' : 'black' }}>{pseudo}</Text>
-          <Image source={{ uri: image.uri }} style={{ width: 80, height: 80, marginBottom: 15 }} />
-        </View>
-
         <View style={styles.container}>
           {generateSquare()}
         </View>
@@ -265,12 +258,12 @@ export default function Chessboard({ route }: any) {
           </View>
         )}
         {white && showModale && promoPieceBlanche.map((item) =>
-        <View key={`${item?.name}`} style={{ flexDirection: 'row' }}>
-          <TouchableOpacity onPress={() => selectPromotion(item)} >
-            <Image source={item?.src} style={{ width: 90, height: 90 }} />
-          </TouchableOpacity>
-        </View>
-      )}
+          <View key={`${item?.name}`} style={{ flexDirection: 'row' }}>
+            <TouchableOpacity onPress={() => selectPromotion(item)} >
+              <Image source={item?.src} style={{ width: 90, height: 90 }} />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </>
   );
