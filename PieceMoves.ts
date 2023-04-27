@@ -379,8 +379,6 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
             for (let tM of tourMovesParsed) {
               // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
               if (tM.row === 0 && (tM.col === 2 || tM.col === 3 || tM.col === 4)) {
-                console.log('ok');
-                
                 echecPiece = true;
               }
             }
@@ -464,7 +462,7 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
         for (let col = 0; col < 8; col++) {
           if (positions[row][col]?.name === 'FouNoir') {
             //converti le resultat de la fonction en string JSON
-            let fouMovesJson = JSON.stringify(moveFouBlanc(row, col, positions));
+            let fouMovesJson = JSON.stringify(moveFouNoir(row, col, positions));
             //converti la string JSON en objet
             let fouMovesParsed = JSON.parse(fouMovesJson);
             // il faut parcourir 'fouMovesParsed'qui est un tableau d'objet
@@ -481,7 +479,7 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
       for (let row = 0; row < 8; row++) {
         for (let col = 4; col < 8; col++) {
           if (positions[row][col]?.name === 'TourNoir') {
-            let tourMovesJson = JSON.stringify(moveTourBlanc(row, col, positions));
+            let tourMovesJson = JSON.stringify(moveTourNoir(row, col, positions));
             let tourMovesParsed = JSON.parse(tourMovesJson);
             for (let tM of tourMovesParsed) {
               // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
@@ -496,7 +494,7 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
       for (let row = 0; row < 8; row++) {
         for (let col = 4; col < 8; col++) {
           if (positions[row][col]?.name === 'ReineNoir') {
-            let reineMovesJson = JSON.stringify(moveReineBlanc(row, col, positions));
+            let reineMovesJson = JSON.stringify(moveReineNoir(row, col, positions));
             let reineMovesParsed = JSON.parse(reineMovesJson);
             for (let tM of reineMovesParsed) {
               // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
@@ -537,7 +535,7 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
         for (let col = 0; col < 8; col++) {
           if (positions[row][col]?.name === 'FouNoir') {
             //converti le resultat de la fonction en string JSON
-            let fouMovesJson = JSON.stringify(moveFouBlanc(row, col, positions));
+            let fouMovesJson = JSON.stringify(moveFouNoir(row, col, positions));
             //converti la string JSON en objet
             let fouMovesParsed = JSON.parse(fouMovesJson);
             // il faut parcourir 'fouMovesParsed'qui est un tableau d'objet
@@ -552,9 +550,9 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
       }
 
       for (let row = 0; row < 8; row++) {
-        for (let col = 4; col < 8; col++) {
+        for (let col = 2; col < 5; col++) {
           if (positions[row][col]?.name === 'TourNoir') {
-            let tourMovesJson = JSON.stringify(moveTourBlanc(row, col, positions));
+            let tourMovesJson = JSON.stringify(moveTourNoir(row, col, positions));
             let tourMovesParsed = JSON.parse(tourMovesJson);
             for (let tM of tourMovesParsed) {
               // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
@@ -567,9 +565,9 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
       }
 
       for (let row = 0; row < 8; row++) {
-        for (let col = 4; col < 8; col++) {
+        for (let col = 2; col < 5; col++) {
           if (positions[row][col]?.name === 'ReineNoir') {
-            let reineMovesJson = JSON.stringify(moveReineBlanc(row, col, positions));
+            let reineMovesJson = JSON.stringify(moveReineNoir(row, col, positions));
             let reineMovesParsed = JSON.parse(reineMovesJson);
             for (let tM of reineMovesParsed) {
               // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
@@ -581,8 +579,8 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
         }
       }
 
-      if (!echecPion && !echecPion) {
-        possibleMoves.push({ row: row, col: col + 2 });
+      if (!echecPion && !echecPiece) {
+        possibleMoves.push({ row: row, col: col - 2 });
       }
     }
   }
