@@ -139,14 +139,14 @@ export default function Chessboard() {
   ** Cette fonction prend en parametre la position de la piece sélectionnée
   */
   function selectPiece(row: number, col: number) {
-     if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
-    let piece = positions[row][col];
-    if (positions && piece) {
-      setIsTouched(piece)
-      setPossibleMove(moves[piece.name](row, col, positions));
-      setInitialP({ row, col });
+    if (myTurn && ((positions[row][col]?.name.indexOf('Blanc') !== -1 && white) || (positions[row][col]?.name.indexOf('Noir') !== -1 && !white))) {
+      let piece = positions[row][col];
+      if (positions && piece) {
+        setIsTouched(piece)
+        setPossibleMove(moves[piece.name](row, col, positions));
+        setInitialP({ row, col });
+      }
     }
-     }
   }
 
   /*
@@ -218,16 +218,14 @@ export default function Chessboard() {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button title="test" onPress={() => setShowModale(true)} />
+      <Button title="test" onPress={() => setShowModale(!showModale)} />
       <View style={styles.container}>
         {generateSquare()}
       </View>
       {showModale && (
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', position: 'absolute' }}>
+        <View style={{ flexDirection: 'row' }}>
           {promoPiece.map((item) =>
-            <View key={`${item?.src}`} style={{ width: '50%',  alignItems: 'center', justifyContent: 'center', backgroundColor: 'white' }}>
-              <Image source={item?.src} style={{ width: '90%' }} />
-            </View>
+            <Image source={item?.src} style={{ width: 90, height: 90 }} />
           )}
         </View>
       )}
