@@ -406,7 +406,7 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
       }
     }
   }
-  
+
   let echecPiece = false;
   // Vérifier les cases autour du roi
   for (let i = -1; i <= 1; i++) {
@@ -427,12 +427,13 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
 
   let possibleMovesJSON = JSON.stringify(possibleMoves);
   let possibleMovesParsed = JSON.parse(possibleMovesJSON);
-  
+
   for (let rowF = 0; rowF < 8; rowF++) {
     for (let colF = 0; colF < 8; colF++) {
       if (positions[rowF][colF]?.name === 'ReineBlanc') {
         let reineMovesJson = JSON.stringify(moveReineBlanc(rowF, colF, positions));
         let reineMovesParsed = JSON.parse(reineMovesJson);
+
         for (let reineM of reineMovesParsed) {
           for (let roiM of possibleMovesParsed) {
             if (reineM.row === roiM.row && reineM.col === roiM.col) {
@@ -441,20 +442,17 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
               possibleMoves = possibleMoves.filter((item) => {
                 return !(item.row === rowToRemove && item.col === colToRemove);
               });
-              
-              
             }
           }
         }
       }
-      //autre if
     }
   }
   return possibleMoves;
 }
 
 export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null)[][], hasMoved: boolean) => {
-  const possibleMoves = [];
+  let possibleMoves = [];
 
   const pieceDroite1 = positions[row][col + 1];
   const pieceDroite2 = positions[row][col + 2];
@@ -505,6 +503,7 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
         }
       }
 
+      // roque echec tour noir
       for (let row = 0; row < 8; row++) {
         for (let col = 4; col < 8; col++) {
           if (positions[row][col]?.name === 'TourNoir') {
@@ -519,6 +518,7 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
         }
       }
 
+      // roque echec reine noir
       for (let row = 0; row < 8; row++) {
         for (let col = 4; col < 8; col++) {
           if (positions[row][col]?.name === 'ReineNoir') {
@@ -577,6 +577,7 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
         }
       }
 
+      // roque echec tour noir
       for (let row = 0; row < 8; row++) {
         for (let col = 2; col < 5; col++) {
           if (positions[row][col]?.name === 'TourNoir') {
@@ -622,6 +623,30 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
         // Vérifier si la case est vide ou contient une pièce ennemie
         if (!piece || (piece && piece.name.indexOf('Noir') !== -1)) {
           possibleMoves.push({ row: row + i, col: col + j });
+        }
+      }
+    }
+  }
+
+  let possibleMovesJSON = JSON.stringify(possibleMoves);
+  let possibleMovesParsed = JSON.parse(possibleMovesJSON);
+
+  for (let rowF = 0; rowF < 8; rowF++) {
+    for (let colF = 0; colF < 8; colF++) {
+      if (positions[rowF][colF]?.name === 'ReineNoir') {
+        let reineMovesJson = JSON.stringify(moveReineNoir(rowF, colF, positions));
+        let reineMovesParsed = JSON.parse(reineMovesJson);
+
+        for (let reineM of reineMovesParsed) {
+          for (let roiM of possibleMovesParsed) {
+            if (reineM.row === roiM.row && reineM.col === roiM.col) {
+              let rowToRemove = reineM.row;
+              let colToRemove = reineM.col;
+              possibleMoves = possibleMoves.filter((item) => {
+                return !(item.row === rowToRemove && item.col === colToRemove);
+              });
+            }
+          }
         }
       }
     }
@@ -840,6 +865,56 @@ export const moveReineNoir = (row: number, col: number, positions: (Pieces | nul
     possibleMoves.push({ row: row + i, col: col + i });
   }
 
+  for (let rowT = 0; rowT < 8; rowT++) {
+    for (let colT = 0; colT < 8; colT++) {
+      const piece = positions[rowT][colT];
+      if (piece && piece.name.indexOf('RoiBlanc') !== -1) {
+        let reineMovesJson = JSON.stringify(possibleMoves);
+        let reineMovesParsed = JSON.parse(reineMovesJson);
+        for (let rM of reineMovesParsed) {
+          // si le roi et la reine sont sur la meme ligne
+          if (row === rowT) {
+            // row = rowT = ligne roi | rM.row = possibleMove reine
+            if (rowT === rM.row) {
+              // si on est sur la meme ligne (row) on veux ajouter/enlever une colonne (col)
+              possibleMoves.push({ row: rowT, col: colT + 1 }, { row: rowT, col: colT - 1 });
+            }
+          }
+          // si on est sur la meme colonne
+          if (col === colT) {
+            if (colT === rM.col) {
+              possibleMoves.push({ row: rowT + 1, col: colT }, { row: rowT - 1, col: colT });
+            }
+          }
+          //diagonale bas-droite
+          for (let i = 0; i < 7; i++) {
+            if (col + i === colT && row + i === rowT) {
+              possibleMoves.push({ row: rowT + 1, col: colT + 1 });
+            }
+          }
+          //diagonale bas-gauche
+          for (let i = 0; i < 7; i++) {
+            if (col - i === colT && row + i === rowT) {
+              possibleMoves.push({ row: rowT + 1, col: colT - 1 });
+            }
+          }
+          //diagonale haut-droite
+          for (let i = 0; i < 7; i++) {
+            if (col + i === colT && row - i === rowT) {
+              possibleMoves.push({ row: rowT - 1, col: colT + 1 });
+            }
+          }
+          //diagonale haut-gauche
+          for (let i = 0; i < 7; i++) {
+            if (col - i === colT && row - i === rowT) {
+              possibleMoves.push({ row: rowT - 1, col: colT - 1 });
+            }
+          }
+        }
+      }
+    }
+  }
+
   return possibleMoves
 }
 
@@ -943,5 +1018,55 @@ export const moveReineBlanc = (row: number, col: number, positions: (Pieces | nu
     possibleMoves.push({ row: row + i, col: col + i });
   }
 
-  return possibleMoves
+  for (let rowT = 0; rowT < 8; rowT++) {
+    for (let colT = 0; colT < 8; colT++) {
+      const piece = positions[rowT][colT];
+      if (piece && piece.name.indexOf('RoiNoir') !== -1) {
+        let reineMovesJson = JSON.stringify(possibleMoves);
+        let reineMovesParsed = JSON.parse(reineMovesJson);
+        for (let rM of reineMovesParsed) {
+          // si le roi et la reine sont sur la meme ligne
+          if (row === rowT) {
+            // row = rowT = ligne roi | rM.row = possibleMove reine
+            if (rowT === rM.row) {
+              // si on est sur la meme ligne (row) on veux ajouter/enlever une colonne (col)
+              possibleMoves.push({ row: rowT, col: colT + 1 }, { row: rowT, col: colT - 1 });
+            }
+          }
+          // si on est sur la meme colonne
+          if (col === colT) {
+            if (colT === rM.col) {
+              possibleMoves.push({ row: rowT + 1, col: colT }, { row: rowT - 1, col: colT });
+            }
+          }
+          //diagonale bas-droite
+          for (let i = 0; i < 7; i++) {
+            if (col + i === colT && row + i === rowT) {
+              possibleMoves.push({ row: rowT + 1, col: colT + 1 });
+            }
+          }
+          //diagonale bas-gauche
+          for (let i = 0; i < 7; i++) {
+            if (col - i === colT && row + i === rowT) {
+              possibleMoves.push({ row: rowT + 1, col: colT - 1 });
+            }
+          }
+          //diagonale haut-droite
+          for (let i = 0; i < 7; i++) {
+            if (col + i === colT && row - i === rowT) {
+              possibleMoves.push({ row: rowT - 1, col: colT + 1 });
+            }
+          }
+          //diagonale haut-gauche
+          for (let i = 0; i < 7; i++) {
+            if (col - i === colT && row - i === rowT) {
+              possibleMoves.push({ row: rowT - 1, col: colT - 1 });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return possibleMoves;
 }
