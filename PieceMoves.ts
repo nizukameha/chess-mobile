@@ -243,7 +243,7 @@ export const moveCavalierNoir = (row: number, col: number, positions: (Pieces | 
  * @returns Un tableau d'objets contenant les coordonnées de chaque case où le Roi peut se déplacer.
  */
 export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)[][], hasMoved: boolean) => {
-  const possibleMoves = [];
+  let possibleMoves = [];
 
   const pieceDroite1 = positions[row][col + 1];
   const pieceDroite2 = positions[row][col + 2];
@@ -333,7 +333,7 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
     }
     //Grand roque
     if (row === 0 && pieceGauche1 == null && pieceGauche2 == null && pieceGauche3 == null && pieceGauche4?.name == 'TourNoir' && pieceDroite1?.name !== 'TourBlanc' && pieceDroite2?.name !== 'TourBlanc' && pieceDroite3?.name !== 'TourBlanc' && pieceDroite1?.name !== 'ReineBlanc' && pieceDroite2?.name !== 'ReineBlanc' && pieceDroite3?.name !== 'ReineBlanc') {
-      
+
       let rowP = 1;
       let echecPion = false;
       let echecPiece = false;
@@ -342,7 +342,7 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
           echecPion = true;
         }
       }
-      
+
       // le cavalier peut mettre en échec le roi entre la row 0 et 2 et entre les col 1 et 5
       for (let row = 1; row < 3; row++) {
         for (let col = 1; col < 6; col++) {
@@ -351,7 +351,7 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
           }
         }
       }
-      
+
       // on doit vérifier toutes les lignes et toutes les colonnes (pour les fous)
       for (let row = 1; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
@@ -400,13 +400,14 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
           }
         }
       }
-      
+
       if (!echecPion && !echecPiece) {
         possibleMoves.push({ row: row, col: col - 2 });
       }
     }
   }
-
+  
+  let echecPiece = false;
   // Vérifier les cases autour du roi
   for (let i = -1; i <= 1; i++) {
     for (let j = -1; j <= 1; j++) {
@@ -415,12 +416,40 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
         const piece = positions[row + i][col + j];
         // Vérifier si la case est vide ou contient une pièce ennemie
         if (!piece || (piece && piece.name.indexOf('Blanc') !== -1)) {
-          possibleMoves.push({ row: row + i, col: col + j });
+
+          if (!echecPiece) {
+            possibleMoves.push({ row: row + i, col: col + j });
+          }
         }
       }
     }
   }
 
+  let possibleMovesJSON = JSON.stringify(possibleMoves);
+  let possibleMovesParsed = JSON.parse(possibleMovesJSON);
+  
+  for (let rowF = 0; rowF < 8; rowF++) {
+    for (let colF = 0; colF < 8; colF++) {
+      if (positions[rowF][colF]?.name === 'ReineBlanc') {
+        let reineMovesJson = JSON.stringify(moveReineBlanc(rowF, colF, positions));
+        let reineMovesParsed = JSON.parse(reineMovesJson);
+        for (let reineM of reineMovesParsed) {
+          for (let roiM of possibleMovesParsed) {
+            if (reineM.row === roiM.row && reineM.col === roiM.col) {
+              let rowToRemove = reineM.row;
+              let colToRemove = reineM.col;
+              possibleMoves = possibleMoves.filter((item) => {
+                return !(item.row === rowToRemove && item.col === colToRemove);
+              });
+              
+              
+            }
+          }
+        }
+      }
+      //autre if
+    }
+  }
   return possibleMoves;
 }
 
@@ -483,8 +512,6 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
             let tourMovesParsed = JSON.parse(tourMovesJson);
             for (let tM of tourMovesParsed) {
               if (tM.row === 7 && (tM.col === 4 || tM.col === 5 || tM.col === 6)) {
-                console.log('ok');
-                
                 echecPiece = true;
               }
             }
