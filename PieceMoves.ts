@@ -257,7 +257,7 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
   //Petit roque
   // Verifier possibleMove des autres pieces sur chaque cases ou va se déplacer le roi
   if (!hasMoved) {
-    if (row === 0 && pieceDroite1 == null && pieceDroite2 == null && pieceDroite3?.name == 'TourNoir') {
+    if (row === 0 && pieceDroite1 == null && pieceDroite2 == null && pieceDroite3?.name == 'TourNoir' && pieceGauche1?.name !== 'TourBlanc' && pieceGauche2?.name !== 'TourBlanc' && pieceGauche3?.name !== 'TourBlanc' && pieceGauche4?.name !== 'TourBlanc' && pieceGauche1?.name !== 'ReineBlanc' && pieceGauche2?.name !== 'ReineBlanc' && pieceGauche3?.name !== 'ReineBlanc' && pieceGauche4?.name !== 'ReineBlanc') {
       let rowP = 1;
       let echecPion = false;
       let echecPiece = false;
@@ -332,7 +332,7 @@ export const moveRoiNoir = (row: number, col: number, positions: (Pieces | null)
       }
     }
     //Grand roque
-    if (row === 0 && pieceGauche1 == null && pieceGauche2 == null && pieceGauche3 == null && pieceGauche4?.name == 'TourNoir') {
+    if (row === 0 && pieceGauche1 == null && pieceGauche2 == null && pieceGauche3 == null && pieceGauche4?.name == 'TourNoir' && pieceDroite1?.name !== 'TourBlanc' && pieceDroite2?.name !== 'TourBlanc' && pieceDroite3?.name !== 'TourBlanc' && pieceDroite1?.name !== 'ReineBlanc' && pieceDroite2?.name !== 'ReineBlanc' && pieceDroite3?.name !== 'ReineBlanc') {
       
       let rowP = 1;
       let echecPion = false;
@@ -438,7 +438,7 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
 
   if (!hasMoved) {
     //Petit roque
-    if (row === 7 && pieceDroite1 == null && pieceDroite2 == null && pieceDroite3?.name == 'TourBlanc') {
+    if (row === 7 && pieceDroite1 == null && pieceDroite2 == null && pieceDroite3?.name == 'TourBlanc' && pieceGauche1?.name !== 'TourNoir' && pieceGauche2?.name !== 'TourNoir' && pieceGauche3?.name !== 'TourNoir' && pieceGauche4?.name !== 'TourNoir' && pieceGauche1?.name !== 'ReineNoir' && pieceGauche2?.name !== 'ReineNoir' && pieceGauche3?.name !== 'ReineNoir' && pieceGauche4?.name !== 'ReineNoir') {
       let rowP = 6;
       let echecPion = false;
       let echecPiece = false;
@@ -482,8 +482,9 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
             let tourMovesJson = JSON.stringify(moveTourNoir(row, col, positions));
             let tourMovesParsed = JSON.parse(tourMovesJson);
             for (let tM of tourMovesParsed) {
-              // Si le mouvement du fou est sur la ligne 0 et une colonne entre 4 et 6 alors pas de roque
               if (tM.row === 7 && (tM.col === 4 || tM.col === 5 || tM.col === 6)) {
+                console.log('ok');
+                
                 echecPiece = true;
               }
             }
@@ -511,7 +512,7 @@ export const moveRoiBlanc = (row: number, col: number, positions: (Pieces | null
       }
     }
     //Grand roque
-    if (row === 7 && pieceGauche1 == null && pieceGauche2 == null && pieceGauche3 == null && pieceGauche4?.name == 'TourBlanc') {
+    if (row === 7 && pieceGauche1 == null && pieceGauche2 == null && pieceGauche3 == null && pieceGauche4?.name == 'TourBlanc' && pieceDroite1?.name !== 'TourNoir' && pieceDroite2?.name !== 'TourNoir' && pieceDroite3?.name !== 'TourNoir' && pieceDroite1?.name !== 'ReineNoir' && pieceDroite2?.name !== 'ReineNoir' && pieceDroite3?.name !== 'ReineNoir') {
       let rowP = 6;
       let echecPion = false;
       let echecPiece = false;
